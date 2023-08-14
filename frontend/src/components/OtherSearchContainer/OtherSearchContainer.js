@@ -14,7 +14,7 @@ import { Input } from "@mui/material";
 import ImagesTable from "../ImagesTable/ImageTable";
 import axios from "axios";
 import { useNavigate, createSearchParams} from "react-router-dom";
-import MainSearchContainer from "../../MainSearchContainer/MainSearchContainer";
+import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
 
 
 function OtherSearchContainer() {

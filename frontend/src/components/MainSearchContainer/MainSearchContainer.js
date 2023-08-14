@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import CustomTextarea from "../components/CustomTextArea/CustomTextArea";
-import ImagesTable from "../components/ImagesTable/ImageTable";
+import ImageTable from "../ImagesTable/ImageTable";
 import { createSearchParams, json, useNavigate } from 'react-router-dom';
 import axios from "axios";
+import CustomTextarea from "../CustomTextArea/CustomTextArea";
 
 function MainSearchContainer() {
   const [inputQuery, setInputQuery] = useState('');
@@ -71,7 +71,7 @@ function MainSearchContainer() {
   return (
     <React.Fragment>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData}/>
-      <ImagesTable imagesList={imagesList} imagesPerPage={32} onImageSearch={fetchImageSearch}/>
+      <ImageTable imagesList={imagesList} imagesPerPage={32} onImageSearch={fetchImageSearch}/>
     </React.Fragment>
   );
 }

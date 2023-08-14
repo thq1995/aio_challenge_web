@@ -12,12 +12,13 @@ import {
   Navigate
 } from "react-router-dom";
 
+
 import Navigation from "./components/Navigation/Navigation.js";
 import About from "./components/About/About";
 import Layout from "./components/Layout/Layout";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
 import Home from "./components/Home/Home";
-import MainSearchContainer from "./MainSearchContainer/MainSearchContainer";
+import MainSearchContainer from "./components/MainSearchContainer/MainSearchContainer";
 
 function App() {
   return (

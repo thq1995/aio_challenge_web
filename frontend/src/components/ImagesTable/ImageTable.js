@@ -3,7 +3,7 @@ import axios from "axios";
 import { Container, Grid, ImageList, ImageListItem, Pagination, PaginationItem } from "@mui/material";
 import "./ImageTable.css";
 
-function ImagesTable({ imagesList, imagesPerPage, onImageSearch}) {
+function ImageTable({ imagesList, imagesPerPage, onImageSearch}) {
   const [page, setPage] = useState(1);
 
 
@@ -50,4 +50,4 @@ function ImagesTable({ imagesList, imagesPerPage, onImageSearch}) {
   );
 }
 
-export default ImagesTable;
+export default ImageTable;

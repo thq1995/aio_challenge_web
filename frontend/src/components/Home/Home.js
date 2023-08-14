@@ -10,8 +10,8 @@ import {
   Container,
   Typography,
 } from "@mui/material";
-import MainSearchContainer from "../../MainSearchContainer/MainSearchContainer";
 import OtherSearchContainer from "../OtherSearchContainer/OtherSearchContainer";
+import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
 
 function Home() {
   const Item = styled(Paper)(({ theme }) => ({
