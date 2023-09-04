@@ -59,4 +59,5 @@ class Myfaiss:
         # infos_query = list(map(self.id2img_fps.get, list(idx_image)))
         # image_paths = [info for info in infos_query]
 
+        print(idx_image)
         return idx_image
