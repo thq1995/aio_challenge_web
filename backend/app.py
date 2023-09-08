@@ -9,21 +9,21 @@ from utils.query_processing import Translation
 from utils.faiss import Myfaiss
 import gridfs
 import base64
-
-
-app = Flask(__name__)
-app.config['MONGODB_SETTINGS'] = {
-    'db': 'your_database',
-    'host': 'localhost',
-    'port': 27017
-}
-CORS(app)
 import pymongo
-bin_file='faiss_normal_ViT.bin'
+from bson.json_util import dumps
+from bson import decode_all, json_util
+app = Flask(__name__)
+client = MongoClient('mongodb://localhost:27017/')
+db = client['image_db']
+images_collection = db['images']
 
-MyFaiss = Myfaiss(bin_file,'cpu', Translation(), "ViT-B/32")
 
-with open('image_path.json') as json_file:
+CORS(app)
+bin_file='index.bin'
+
+MyFaiss = Myfaiss(bin_file,'cpu', Translation(), "ViT-L/14@336px")
+
+with open('kf_path.json') as json_file:
     json_dict = json.load(json_file)
 
 
@@ -32,12 +32,14 @@ def getTextSearch():
     print('text_search')
     pagefile = []
     text_query = request.args.get('textquery')
+   
 
     idx_image_list = MyFaiss.text_search(text_query, k=50)
 
     data = get_images_by_ids(idx_image_list.tolist())
+    print('testing_data')
+   
     return data
-    
 
 @app.route('/home/main/imgsearch')
 def image_search():
@@ -56,143 +58,77 @@ def image_search():
     data = get_images_by_ids(idx_image_list.tolist())
 
     return data
+    
 
-
-app.route('/get_img')
-def get_img():
-    # print("get_img")
-    fpath = request.args.get('fpath')
-    # fpath = fpath
-    list_image_name = fpath.split("/")
-    image_name = "/".join(list_image_name[-2:])
-
-    if os.path.exists(fpath):
-        img = cv2.imread(fpath)
-    else:
-        print("load 404.jph")
-        img = cv2.imread("./static/images/404.jpg")
-
-    img = cv2.resize(img, (1280,720))
-
-    # print(img.shape)
-    img = cv2.putText(img, image_name, (30, 80), cv2.FONT_HERSHEY_SIMPLEX, 
-                   3, (255, 0, 0), 4, cv2.LINE_AA)
-
-    ret, jpeg = cv2.imencode('.jpg', img)
-    return  Response((b'--frame\r\n'
-                     b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n'),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-def get_database():
- 
-   # Provide the mongodb atlas url to connect python to mongodb using pymongo
-   CONNECTION_STRING = "mongodb://localhost:27017"
- 
-   # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
-   client = MongoClient(CONNECTION_STRING)
- 
-   # Create the database for our example (we will use the same database throughout the tutorial
-   return client['ai_challenge']
-
-
-def push_images_do_db():
-    collections = get_database()
-    fs = gridfs.GridFS(collections)
-
-
-    iamges_folder = "images";
-    index = 0
-    for filename in os.listdir(iamges_folder):
-        file_path = os.path.join(iamges_folder, filename)
-        
-        for key, value in json_dict.items():
-            if value == file_path:
-                index = key 
-                break
-        print(index)
-        if fs.find_one({"filename": filename}) is None:
-            with open(file_path, 'rb') as f:
-                contents = f.read()
-                fs.put(contents, filename=filename, _id=int(index))
-
-    return "success"
-
-
-
-@app.route('/get_all_images')
+@app.route('/get_all_images/pages')
 def get_all_images():
-    db = get_database()
-    fs = gridfs.GridFS(db)
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("page_size", 20))
 
-    images_files = fs.find().sort("_id", pymongo.ASCENDING)
-    images = []
+    # Calculate the skip value to retrieve the desired page of results
+    skip = (page - 1) * page_size
 
-    for file in images_files:
-        image_content = file.read()
-        encoded_image = base64.b64encode(image_content).decode("utf-8")
-        data = {'filename': file.filename, 'data': encoded_image, '_id': file._id}
-        images.append(data)
-    data = {'result': images } 
+    # Query MongoDB for the paginated data
+    images = images_collection.find().skip(skip).limit(page_size)
+    images_length = images_collection.count_documents({})
+    
+    # Convert the MongoDB documents to a list of dictionaries
+    image_list = [image for image in images]
+    
+    for image in image_list:
+        image_binary = image['image_data']
+        image_base64 = base64.b64encode(image['image_data']).decode('utf-8')
+        image['image_data'] = image_base64
+        
+  
+    # print((type(images_list[0]['image_data'])))
+    image_json = {}
+    image_json ['images_length'] = images_length
+    image_json['result'] = image_list
 
+    return json.dumps(image_json)
+
+@app.get('/subimgsearch')
+def get_subsequent_images():
+    image_id = int(request.args.get("imageId"))
+
+
+    print('sub_img_id', image_id)
+    index_list = []
+    if (image_id >= 10):
+        index_list = [image_id  for image_id in range(image_id-10, image_id + 10)]
+    else: 
+        index_list = [image_id  for image_id in range(image_id, image_id + 20)]
+
+    data = get_images_by_ids(index_list)
     return data
+    
+    
+    
 
 def get_images_by_ids(index_list):
-    db = get_database()
-    fs = gridfs.GridFS(db)
     images = []
-    images_files = fs.find({"_id": {"$in": index_list}})
-    sorted_images = sorted(images_files, key=lambda img: index_list.index(img._id))
-    # print('this is sorted files', sorted_images)
-    for file in sorted_images:
-        image_content = file.read()
-        encoded_image = base64.b64encode(image_content).decode("utf-8")
-        data = {'filename': file.filename, 'data': encoded_image, '_id': file._id}
-        images.append(data)
-    data = {'result': images }
+    images_list = images_collection.find({"_id": {"$in": index_list}})
 
-    return data
+    sorted_images = sorted(images_list, key=lambda img: index_list.index(img["_id"]))
+    sorted_id = [image["_id"] for image in sorted_images]
+    print('this is sorted ids', sorted_id)
 
+    image_list = [image for image in sorted_images]
 
-@app.route('/get_image')
-def get_images_by_id():
-    db = get_database()
-    fs = gridfs.GridFS(db)
+    images_length = len(sorted_images)
+    for image in image_list:
+        image_binary = image['image_data']
+        image_base64 = base64.b64encode(image['image_data']).decode('utf-8')
+        image['image_data'] = image_base64
 
-    id = request.args.get('id')
-   
-    try:
-        print('index: ', id)
-        file_data = fs.find_one({'_id': int(id)})
-        image_content = file_data.read()
-        encoded_image = base64.b64encode(image_content).decode("utf-8")
-        print(encoded_image)
-        data = {'filename': file_data.filename, 'data': encoded_image}
-        return data
-    except Exception as e:
-        return f"Error: {str(e)}", 500
-    
-    
+    image_json = {}
+    image_json['result'] = image_list
+    image_json ['images_length'] = images_length
+    print('images_length', image_json ['images_length'] )
+    return json.dumps(image_json)
 
-@app.route('/api/get_image/<image_id>')
-def get_image_by_id(image_id):
-    db = get_database()
-    fs = gridfs.GridFS(db)
-
-    try:
-        print('index: ', image_id)
-        file_data = fs.find_one({'_id': int(image_id)})
-        image_content = file_data.read()
-        encoded_image = base64.b64encode(image_content).decode("utf-8")
-        print(encoded_image)
-        data = {'data': encoded_image}
-        return data
-    except Exception as e:
-        return f"Error: {str(e)}", 500
-    
 
 if __name__ == "__main__":
-    # temporary setup
-    push_images_do_db()
     app.run(debug=True)
     

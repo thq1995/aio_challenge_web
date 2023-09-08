@@ -27,14 +27,14 @@ function OtherSearchContainer() {
   }, []);
 
   const fetchImages = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/get_all_images`
-      );
-      setImagesList(response.data['result']);
-    } catch (error) {
-      console.error('Error fetching image data:', error);
-    }
+    // try {
+    //   const response = await axios.get(
+    //     `http://localhost:5000/get_all_images`
+    //   );
+    //   setImagesList(response.data['result']);
+    // } catch (error) {
+    //   console.error('Error fetching image data:', error);
+    // }
   }
 
   const fetchImageSearch = async(imageId) => {
@@ -55,7 +55,7 @@ function OtherSearchContainer() {
   }
 
   return (
-    <ImagesTable imagesList={imagesList} imagesPerPage={20} onImageSearch={fetchImageSearch}/>
+    <div></div>
   );
 }
 
