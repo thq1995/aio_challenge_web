@@ -3,7 +3,8 @@ import ImageTable from "../ImagesTable/ImageTable";
 import { createSearchParams, json, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import CustomTextarea from "../CustomTextArea/CustomTextArea";
-import { Grid, ImageList, ImageListItem, ImageListItemBar, Pagination, styled } from "@mui/material";
+import { Checkbox, Grid, ImageList, ImageListItem, ImageListItemBar, Pagination, styled } from "@mui/material";
+import "./MainSearchContainer.css"
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
@@ -13,7 +14,7 @@ const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   },
 }));
 
-function MainSearchContainer({subImages, setSubImages}) {
+function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelectedImages }) {
   const [inputQuery, setInputQuery] = useState('');
   const [imagesList, setImagesList] = useState([]);
   const [imageLength, setImageLength] = useState(0);
@@ -21,7 +22,6 @@ function MainSearchContainer({subImages, setSubImages}) {
   const [iamgePerPage, setImagePerPage] = useState(32);
   const [clearPage, setClearPage] = useState(false);
   const [page, setPage] = useState(1);
-
   const navigate = useNavigate();
 
   const handleInputQueryChange = (value) => {
@@ -113,7 +113,7 @@ function MainSearchContainer({subImages, setSubImages}) {
       )
       setImagesList(image_response.data['result']);
       setSubImages(sub_image_response.data['result']);
-      
+
       console.log('checkdata', subImages)
       setPage(1);
     } catch (error) {
@@ -121,20 +121,54 @@ function MainSearchContainer({subImages, setSubImages}) {
     }
   }
 
+  const toggleImageSelection = (id, imageData, imageTitle) => {
+    setSelectedImages((prevSelectedImages) => {
+      const isSelected = prevSelectedImages.some((image) => image._id === id);
+
+      if (isSelected) {
+        // If the image with the given ID is already selected, remove it
+        return prevSelectedImages.filter((image) => image._id === id);
+      } else {
+        // If the image is not selected, add it
+
+        const imgObj = {
+          _id: id,
+          image_data: imageData,
+          filename: imageTitle
+        };
+        console.log('imageObj-test', imgObj)
+        console.log('imageObj-test-pre', prevSelectedImages)
+        console.log('selected-image', selectedImages)
+
+        return [...prevSelectedImages, imgObj];
+      }
+    });
+  };
+
+
+  const isImageSelected = (imageId) => {
+    return selectedImages.some((image) => image._id === imageId);
+  };
 
   return (
     <React.Fragment>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData} />
       <Grid container sx={{ pt: 3 }}>
-        <ImageList sx={{ width: 'auto', height: '700px' }} cols={4} rowHeight={164}>
+        <ImageList sx={{ width: 'auto', height: 'auto' }} cols={5} rowHeight={'auto'} >
           {imagesList.map((image) => (
-            <ImageListItemWithStyle key={image["_id"]}>
+            <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
               <ImageListItemBar
                 title={image.filename.replace("images/keyframes/", "")}
                 position="top"
+
               />
+              <Grid item>
+                <Checkbox
+                  checked={isImageSelected(image._id)}
+                  onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
+                />
+              </Grid>
               <img
-                className="image"
                 onClick={() => fetchImageSearch(image['_id'], image['filename'])}
                 style={{ cursor: 'pointer' }}
                 src={`data:image/jpeg;base64,${image['image_data']}`}
@@ -142,6 +176,8 @@ function MainSearchContainer({subImages, setSubImages}) {
                 loading="lazy"
                 alt={`image-${image['filename']}`}
               />
+
+
             </ImageListItemWithStyle>
           ))}
         </ImageList>

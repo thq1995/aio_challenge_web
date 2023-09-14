@@ -34,7 +34,7 @@ def getTextSearch():
     text_query = request.args.get('textquery')
    
 
-    idx_image_list = MyFaiss.text_search(text_query, k=50)
+    idx_image_list = MyFaiss.text_search(text_query, k=100)
 
     data = get_images_by_ids(idx_image_list.tolist())
     print('testing_data')
@@ -46,7 +46,7 @@ def image_search():
     print("image search")
     pagefile = []
     id_query = int(request.args.get('imgid'))
-    idx_image_list = MyFaiss.image_search(id_query, k=50)
+    idx_image_list = MyFaiss.image_search(id_query, k=100)
 
     # imgperindex = 100 
 
@@ -67,10 +67,29 @@ def get_all_images():
 
     # Calculate the skip value to retrieve the desired page of results
     skip = (page - 1) * page_size
-
+    
+    print('page', page)
+    print('page_size', page_size)
     # Query MongoDB for the paginated data
     images = images_collection.find().skip(skip).limit(page_size)
-    images_length = images_collection.count_documents({})
+    
+    print('images', images)
+    # Convert the MongoDB documents to a list of dictionaries
+    image_list = [image for image in images]
+    
+    for image in image_list:
+        image_binary = image['image_data']
+        image_base64 = base64.b64encode(image['image_data']).decode('utf-8')
+        image['image_data'] = image_base64
+        
+  
+    # print((type(images_list[0]['image_data'])))
+    image_json = {}
+    image_json['result'] = image_list
+
+    return json.dumps(image_json)
+    
+
     
     # Convert the MongoDB documents to a list of dictionaries
     image_list = [image for image in images]
@@ -96,7 +115,7 @@ def get_subsequent_images():
     print('sub_img_id', image_id)
     index_list = []
     if (image_id >= 10):
-        index_list = [image_id  for image_id in range(image_id-10, image_id + 10)]
+        index_list = [image_id  for image_id in range(image_id-20, image_id + 20)]
     else: 
         index_list = [image_id  for image_id in range(image_id, image_id + 20)]
 

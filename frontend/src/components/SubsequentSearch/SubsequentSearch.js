@@ -2,6 +2,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Container,
   Grid,
   ImageList,
@@ -29,20 +30,47 @@ const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   },
 }));
 
-function SubsequentSearch({subImages}) {
+function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
   console.log('subimages', subImages)
 
   const [imagesList, setImagesList] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
   }, []);
+
+  const toggleImageSelection = (id, imageData, imageTitle) => {
+    const imageObj = {
+      '_id': id,
+      'image_data': imageData,
+      'filename': imageTitle
+    }
+
+    setSelectedImages((prevSelectedImages) => {
+      if (prevSelectedImages.includes(imageObj['_id'])) {
+        return prevSelectedImages.filter((_id) => _id !== id);
+      } else {
+        return [...prevSelectedImages, imageObj];
+      }
+    });
+  };
+
   
-  if(subImages !== undefined){
+  const isImageSelected = (imageId) => {
+    return selectedImages.some((image) => image._id === imageId);
+  };
+
+  if (subImages !== undefined) {
     return (
       <React.Fragment>
-        <ImageList sx={{ width: 500, height: 550 }} cols={2} rowHeight={164}>
+        <ImageList sx={{ width: 'auto', height: 'auto' }} cols={2}>
           {subImages.map((image) => (
-            <ImageListItemWithStyle key={image['_id']}>
+            <ImageListItemWithStyle key={image['_id']} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
+              <Grid item>
+                <Checkbox
+                  checked={isImageSelected(image._id)}
+                  onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
+                />
+              </Grid>
               <ImageListItemBar
                 title={image.filename.replace("images/keyframes/", "")}
                 position="top"
@@ -60,7 +88,7 @@ function SubsequentSearch({subImages}) {
       </React.Fragment>
     );
   }
- 
+
 }
 
 export default SubsequentSearch;

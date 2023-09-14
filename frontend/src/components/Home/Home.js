@@ -13,10 +13,13 @@ import {
 import OtherSearchContainer from "../OtherSearchContainer/OtherSearchContainer";
 import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
 import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
+import ImagePicker from "../ImagePicker/ImagePicker";
 
 function Home() {
   const [subImages, setSubImages] = useState([]);
-
+  const [selectedImages, setSelectedImages] = useState([]);
+  console.log('home-selectd-images-picker', selectedImages)
+  
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
@@ -50,7 +53,7 @@ function Home() {
               height: 'auto'
             }}
           >
-            <MainSearchContainer subImages={subImages} setSubImages={setSubImages}/>
+            <MainSearchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
           </Paper>
         </Grid>
 
@@ -70,7 +73,7 @@ function Home() {
                 }}
                 style={{ padding: '20px' }}
               >
-                <SubsequentSearch subImages={subImages}/>
+                <SubsequentSearch subImages={subImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
               </Paper>
             </Grid>
             <Grid item xs={12}>
@@ -89,6 +92,22 @@ function Home() {
               </Paper>
             </Grid>
           </Grid>
+        </Grid>
+        <Grid item xs={12} sm={12}>
+          <Paper
+            elevation={1}
+            sx={{
+              p: 1.5,
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: "8px",
+              height: '400px',
+              backgroundColor: '#'
+            }}
+            style={{ padding: '20px' }}
+          >
+            <ImagePicker selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
+          </Paper>
         </Grid>
       </Grid>
     </div>
