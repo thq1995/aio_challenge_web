@@ -24,39 +24,33 @@ def compress_image(input_path, output_path, quality=100):
 
 
 def upload_images_to_db():
-    images_folder = "images" + os.sep + "keyframes";
+    keyframes_src = "images" + os.sep + "keyframes";
     index = 0
     # create a function to read meta and convert to dict for title and data
+    count = 0 
+    with tqdm(total=len(os.listdir(keyframes_src)), unit='folder') as pbar:
+        for group_keyframes in sorted(os.listdir(keyframes_src)):
+            group_keyframes = os.path.join(keyframes_src, group_keyframes)
+            print(group_keyframes)
+            for sub_keyframes in sorted(os.listdir(group_keyframes)):
+                video_frames = os.path.join(group_keyframes, sub_keyframes)
+                
+                for frame_name in sorted(os.listdir(video_frames)):
+                    frame_path = os.path.join(video_frames, frame_name)
+                    with open(frame_path, 'rb') as image_file:
+                        image_data = Binary(image_file.read())
 
-    with tqdm(total=len(os.listdir(images_folder)), unit='folder') as pbar:
-        for sub_folders in sorted(os.listdir(images_folder)):
-            sub_folders = os.path.join(images_folder, sub_folders)
-            
-            print(sub_folders)
-            for file_names in sorted(os.listdir(sub_folders)):
-                file_path = os.path.join(sub_folders, file_names)
+                    metadata = {
+                        '_id': index,
+                        'filename': frame_name,
+                        'image_data': Binary(image_data)  # Store image data as Binary
+                    }
                 
-                if images_collection.find_one({'filename': file_path}):
-                    return "Images already exixts", 400
-                
-                with open(file_path, 'rb') as image_file:
-                    image_data = Binary(image_file.read())
-
-                metadata = {
-                    '_id': index,
-                    'filename': file_path,
-                    'image_data': Binary(image_data)  # Store image data as Binary
-                }
-            
-                
-                # file_path = images_folder.replace('keyframes', '')  + file_path
-                
-                images_collection.insert_one(metadata)
-                index+=1
-            pbar.update(1)
-       
-    
-    return "success"
+                    
+                    # file_path = images_folder.replace('keyframes', '')  + file_path
+                    if not (images_collection.find_one({'_id': index})):
+                        images_collection.insert_one(metadata)
+                        index+=1
 
 
 if __name__ == "__main__":

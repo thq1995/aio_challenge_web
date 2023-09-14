@@ -1,6 +1,6 @@
 import { Button, Grid, ImageList, ImageListItem, ImageListItemBar, keyframes, styled } from "@mui/material";
 import React from "react";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
