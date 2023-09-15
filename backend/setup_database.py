@@ -58,7 +58,7 @@ def upload_images_to_db(path):
 
 if __name__ == "__main__": 
     # this is the path for database
-    directoey ="/media/t-dragon/Storage/Development/ai_challenge_web/backend/images/keyframes"
-    path = os.path.join(directoey)
+    database_directory ="/media/t-dragon/Storage/Development/ai_challenge_web/backend/images/keyframes"
+    path = os.path.join(database_directory)
     upload_images_to_db(path)
 
