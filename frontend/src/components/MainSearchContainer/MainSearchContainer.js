@@ -19,7 +19,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const [imagesList, setImagesList] = useState([]);
   const [imageLength, setImageLength] = useState(0);
   const [textSearch, setTextSearch] = useState(false);
-  const [iamgePerPage, setImagePerPage] = useState(32);
+  const [imagePerPage, setImagePerPage] = useState(32);
   const [clearPage, setClearPage] = useState(false);
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
 
       if (isSelected) {
         // If the image with the given ID is already selected, remove it
-        return prevSelectedImages.filter((image) => image._id === id);
+        return prevSelectedImages.filter((image) => image._id !== id);
       } else {
         // If the image is not selected, add it
 
@@ -136,10 +136,6 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
           image_data: imageData,
           filename: imageTitle
         };
-        console.log('imageObj-test', imgObj)
-        console.log('imageObj-test-pre', prevSelectedImages)
-        console.log('selected-image', selectedImages)
-
         return [...prevSelectedImages, imgObj];
       }
     });
@@ -184,7 +180,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
       </Grid>
       <Grid container justifyContent="center" alignItems="center">
         <Pagination
-          count={Math.ceil(imageLength / iamgePerPage)}
+          count={Math.ceil(imageLength / imagePerPage)}
           color="primary"
           showFirstButton showLastButton
           page={page}

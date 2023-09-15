@@ -39,17 +39,21 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
   }, []);
 
   const toggleImageSelection = (id, imageData, imageTitle) => {
-    const imageObj = {
-      '_id': id,
-      'image_data': imageData,
-      'filename': imageTitle
-    }
-
     setSelectedImages((prevSelectedImages) => {
-      if (prevSelectedImages.includes(imageObj['_id'])) {
-        return prevSelectedImages.filter((_id) => _id !== id);
+      const isSelected = prevSelectedImages.some((image) => image._id === id);
+
+      if (isSelected) {
+        // If the image with the given ID is already selected, remove it
+        return prevSelectedImages.filter((image) => image._id !== id);
       } else {
-        return [...prevSelectedImages, imageObj];
+        // If the image is not selected, add it
+
+        const imgObj = {
+          _id: id,
+          image_data: imageData,
+          filename: imageTitle
+        };
+        return [...prevSelectedImages, imgObj];
       }
     });
   };

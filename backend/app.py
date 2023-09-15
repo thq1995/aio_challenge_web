@@ -72,7 +72,7 @@ def get_all_images():
     print('page_size', page_size)
     # Query MongoDB for the paginated data
     images = images_collection.find().skip(skip).limit(page_size)
-    
+    images_length = images_collection.estimated_document_count()
     print('images', images)
     # Convert the MongoDB documents to a list of dictionaries
     image_list = [image for image in images]
@@ -86,7 +86,7 @@ def get_all_images():
     # print((type(images_list[0]['image_data'])))
     image_json = {}
     image_json['result'] = image_list
-
+    image_json['images_length'] = images_length
     return json.dumps(image_json)
     
 

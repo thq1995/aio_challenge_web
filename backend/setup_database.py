@@ -23,18 +23,20 @@ def compress_image(input_path, output_path, quality=100):
 
 
 
-def upload_images_to_db():
-    keyframes_src = "images" + os.sep + "keyframes";
+def upload_images_to_db(path):
+    keyframes_src = path
+
+    items = os.listdir(keyframes_src)
+    keyframe_directories = [item for item in sorted(items) if os.path.isdir(os.path.join(keyframes_src, item)) and "KeyFrames"]
     index = 0
     # create a function to read meta and convert to dict for title and data
     count = 0 
-    with tqdm(total=len(os.listdir(keyframes_src)), unit='folder') as pbar:
+    with tqdm(total=len(keyframe_directories), unit='folder') as pbar:
         for group_keyframes in sorted(os.listdir(keyframes_src)):
             group_keyframes = os.path.join(keyframes_src, group_keyframes)
-            print(group_keyframes)
+            pbar.set_description("Uploading %s" % group_keyframes)
             for sub_keyframes in sorted(os.listdir(group_keyframes)):
                 video_frames = os.path.join(group_keyframes, sub_keyframes)
-                
                 for frame_name in sorted(os.listdir(video_frames)):
                     frame_path = os.path.join(video_frames, frame_name)
                     with open(frame_path, 'rb') as image_file:
@@ -42,7 +44,7 @@ def upload_images_to_db():
 
                     metadata = {
                         '_id': index,
-                        'filename': frame_name,
+                        'filename': frame_path.replace(group_keyframes+os.sep, ""),
                         'image_data': Binary(image_data)  # Store image data as Binary
                     }
                 
@@ -51,8 +53,12 @@ def upload_images_to_db():
                     if not (images_collection.find_one({'_id': index})):
                         images_collection.insert_one(metadata)
                         index+=1
+            pbar.update(1)
 
 
-if __name__ == "__main__":
-    upload_images_to_db()
+if __name__ == "__main__": 
+    # this is the path for database
+    directoey ="/media/t-dragon/Storage/Development/ai_challenge_web/backend/images/keyframes"
+    path = os.path.join(directoey)
+    upload_images_to_db(path)
 
