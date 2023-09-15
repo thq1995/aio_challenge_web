@@ -58,7 +58,7 @@ def upload_images_to_db(path):
 
 if __name__ == "__main__": 
     # this is the path for database
-    database_directory ="/media/t-dragon/Storage/Development/ai_challenge_web/backend/images/keyframes"
+    database_directory ="/media/t-dragon/Storage/Development/Data_GoogleDrive/keyframes"
     path = os.path.join(database_directory)
     upload_images_to_db(path)
 
