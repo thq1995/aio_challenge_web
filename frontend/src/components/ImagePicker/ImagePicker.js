@@ -1,5 +1,5 @@
-import { Button, IconButton, ImageList, ImageListItem, ImageListItemBar, styled } from "@mui/material";
-import React from "react";
+import { Button, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, styled } from "@mui/material";
+import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -14,10 +14,16 @@ const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
 
 function ImagePicker({ selectedImages, setSelectedImages }) {
   console.log('image-picker-images', selectedImages)
+  const [subFileName, setSubFileName] = useState('');
+
+  const handleTextFieldChange = (event) => {
+    console.log(subFileName)
+    setSubFileName(event.target.value)
+  }
 
   const handlingSubmission = () => {
-    if (selectedImages === 0) {
-      alert('Please select images before submission')
+    if (selectedImages === null|| subFileName === '') {
+      alert('Please select images or fill out file submission name')
     }
     else {
 
@@ -36,7 +42,8 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
       // Create a link element for the download
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Submission.csv';
+      
+      link.download = subFileName + ".csv";
 
       // Trigger the download
       link.click();
@@ -84,14 +91,43 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
     setSelectedImages(updatedSelectedImages);
   };
 
+  const handlingClearSelectedImages = () => {
+    setSelectedImages([]);
+  }
 
   if (selectedImages !== undefined) {
     return (
       <React.Fragment>
         <h3>Image Submission Sites</h3>
-        <Button variant="contained" onClick={handlingSubmission}>
-          Download CSV
-        </Button>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={4}>
+            <TextField
+              id="outlined-basic"
+              label="Submission File Name"
+              variant="outlined"
+              fullWidth
+              onChange={handleTextFieldChange}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <Button
+              variant="contained"
+              onClick={handlingSubmission}
+              fullWidth
+            >
+              Download CSV
+            </Button>
+          </Grid>
+          <Grid item xs={4}>
+            <Button
+              variant="contained"
+              onClick={handlingClearSelectedImages}
+              fullWidth
+            >
+              Clear Selected Images
+            </Button>
+          </Grid>
+        </Grid>
 
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="selectedImages">
@@ -119,7 +155,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
                                 aria-label={`Delete ${image.filename}`}
                                 onClick={() => handleDeleteImage(image._id)}
                               >
-                                <DeleteIcon sx={{ color: 'white' }}/>
+                                <DeleteIcon sx={{ color: 'white' }} />
                               </IconButton>
                             }
                           />

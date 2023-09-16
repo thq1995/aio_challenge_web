@@ -37,22 +37,23 @@ def upload_images_to_db(path):
             pbar.set_description("Uploading %s" % group_keyframes)
             for sub_keyframes in sorted(os.listdir(group_keyframes)):
                 video_frames = os.path.join(group_keyframes, sub_keyframes)
-                for frame_name in sorted(os.listdir(video_frames)):
-                    frame_path = os.path.join(video_frames, frame_name)
-                    with open(frame_path, 'rb') as image_file:
-                        image_data = Binary(image_file.read())
+                if os.path.isdir(video_frames):
+                    for frame_name in sorted(os.listdir(video_frames)):
+                        frame_path = os.path.join(video_frames, frame_name)
+                        with open(frame_path, 'rb') as image_file:
+                            image_data = Binary(image_file.read())
 
-                    metadata = {
-                        '_id': index,
-                        'filename': frame_path.replace(group_keyframes+os.sep, ""),
-                        'image_data': Binary(image_data)  # Store image data as Binary
-                    }
-                
+                        metadata = {
+                            '_id': index,
+                            'filename': frame_path.replace(group_keyframes+os.sep, ""),
+                            'image_data': Binary(image_data)  # Store image data as Binary
+                        }
                     
-                    # file_path = images_folder.replace('keyframes', '')  + file_path
-                    if not (images_collection.find_one({'_id': index})):
-                        images_collection.insert_one(metadata)
-                        index+=1
+                        
+                        # file_path = images_folder.replace('keyframes', '')  + file_path
+                        if not (images_collection.find_one({'_id': index})):
+                            images_collection.insert_one(metadata)
+                            index+=1
             pbar.update(1)
 
 
