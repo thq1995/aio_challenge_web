@@ -1,20 +1,8 @@
-import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
+import { Button } from "@mui/material";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
-import { Box, Button, Container, CssBaseline, Grid, TextField, Typography } from "@mui/material";
-import { createSearchParams, json, useNavigate } from 'react-router-dom';
-import "./CustomTextArea.css"
-
-const InputContainer = styled("div")({
-  display: "flex",
-  alignItems: "center",
-  border: "2px solid #007bff",
-  borderRadius: "8px",
-  padding: "8px",
-  width: "100%",
-});
+import { styled } from "@mui/material/styles";
+import "./CustomTextArea.css";
+import React from "react";
 
 const StyledTextarea = styled(TextareaAutosize)({
   width: '95%',
@@ -32,27 +20,6 @@ const StyledTextarea = styled(TextareaAutosize)({
 
 
 const CustomTextarea = ({ value, onChange, clearInput, onSubmit }) => {
-  const navigate = useNavigate();
-
-
-  const searchQuery = async () => {
-    const params = { textquery: value }
-    navigate({
-      pathname: '/home/main',
-      search: `?${createSearchParams(params)}`
-    })
-
-    try {
-      const response = await fetch('http://localhost:5000/home/main/textsearch?textquery=' + value)
-      const data = await response.json();
-      const imageList = data['result']
-      console.log('textsearch', imageList)
-    }
-    catch (error) {
-      console.log('Error fetching data', error)
-    }
-  }
-
   return (
     <React.Fragment>
       <StyledTextarea

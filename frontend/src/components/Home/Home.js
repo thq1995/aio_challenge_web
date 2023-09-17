@@ -1,19 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import {
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Typography,
+  Typography
 } from "@mui/material";
-import OtherSearchContainer from "../OtherSearchContainer/OtherSearchContainer";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import React, { useState } from "react";
+import ImagePicker from "../ImagePicker/ImagePicker";
 import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
 import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
-import ImagePicker from "../ImagePicker/ImagePicker";
 
 function Home() {
   const [subImages, setSubImages] = useState([]);

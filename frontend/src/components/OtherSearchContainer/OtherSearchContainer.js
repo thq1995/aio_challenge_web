@@ -1,41 +1,14 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { TextareaAutosize } from "@mui/base";
-import { Input } from "@mui/material";
-import ImagesTable from "../ImagesTable/ImageTable";
 import axios from "axios";
-import { useNavigate, createSearchParams} from "react-router-dom";
-import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
+import React, { useEffect, useState } from "react";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 
 function OtherSearchContainer() {
-  const top100Films = ["test1", "test2", "test3"];
-  const [imagesList, setImagesList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchImages();
   }, []);
-
-  const fetchImages = async () => {
-    // try {
-    //   const response = await axios.get(
-    //     `http://localhost:5000/get_all_images`
-    //   );
-    //   setImagesList(response.data['result']);
-    // } catch (error) {
-    //   console.error('Error fetching image data:', error);
-    // }
-  }
 
   const fetchImageSearch = async(imageId) => {
     const params = { imgid: imageId }

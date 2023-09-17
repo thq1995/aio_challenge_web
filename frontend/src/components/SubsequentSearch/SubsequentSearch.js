@@ -1,26 +1,12 @@
+import styled from "@emotion/styled";
 import {
-  Autocomplete,
-  Box,
-  Button,
   Checkbox,
-  Container,
   Grid,
   ImageList,
   ImageListItem,
-  ImageListItemBar,
-  Link,
-  Pagination,
-  TextField,
-  Typography,
+  ImageListItemBar
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { TextareaAutosize } from "@mui/base";
-import { Input } from "@mui/material";
-import ImagesTable from "../ImagesTable/ImageTable";
-import axios from "axios";
-import { useNavigate, createSearchParams } from "react-router-dom";
-import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
-import styled from "@emotion/styled";
+import React, { useEffect } from "react";
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
@@ -33,8 +19,6 @@ const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
 function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
   console.log('subimages', subImages)
 
-  const [imagesList, setImagesList] = useState([]);
-  const navigate = useNavigate();
   useEffect(() => {
   }, []);
 

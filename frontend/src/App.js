@@ -1,24 +1,18 @@
-import "./App.css";
-import logo from './logo.svg';
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
   BrowserRouter,
-  Routes,
-  Navigate
+  Navigate,
+  Route,
+  Routes
 } from "react-router-dom";
+import "./App.css";
 
 
-import Navigation from "./components/Navigation/Navigation.js";
 import About from "./components/About/About";
-import Layout from "./components/Layout/Layout";
-import PageNotFound from "./components/PageNotFound/PageNotFound";
 import Home from "./components/Home/Home";
+import Layout from "./components/Layout/Layout";
 import MainSearchContainer from "./components/MainSearchContainer/MainSearchContainer";
+import PageNotFound from "./components/PageNotFound/PageNotFound";
 
 function App() {
   return (

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import ImageTable from "../ImagesTable/ImageTable";
-import { createSearchParams, json, useNavigate } from 'react-router-dom';
-import axios from "axios";
-import CustomTextarea from "../CustomTextArea/CustomTextArea";
 import { Checkbox, Grid, ImageList, ImageListItem, ImageListItemBar, Pagination, styled } from "@mui/material";
-import "./MainSearchContainer.css"
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { createSearchParams, useNavigate } from 'react-router-dom';
+import CustomTextarea from "../CustomTextArea/CustomTextArea";
+import "./MainSearchContainer.css";
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
@@ -170,7 +169,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
                 src={`data:image/jpeg;base64,${image['image_data']}`}
                 srcSet={`data:image/jpeg;base64,${image['image_data']}`}
                 loading="lazy"
-                alt={`image-${image['filename']}`}
+                alt={`not found -${image['filename']}`}
               />
 
 

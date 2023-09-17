@@ -1,9 +1,0 @@
-.image-container {
-	padding: 5px;
-	transition: transform 0.2s ease-in-out;
-}
-
-.image-container:hover{
-	border: 3px solid orange;
-	transform: scale(1.2);
-}
