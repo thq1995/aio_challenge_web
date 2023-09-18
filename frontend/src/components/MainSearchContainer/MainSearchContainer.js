@@ -1,9 +1,10 @@
-import { Checkbox, Grid, ImageList, ImageListItem, ImageListItemBar, Pagination, styled } from "@mui/material";
+import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, styled } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import CustomTextarea from "../CustomTextArea/CustomTextArea";
-import "./MainSearchContainer.css";
+import "./MainSearchContainer.css"
+import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
@@ -22,6 +23,23 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const [clearPage, setClearPage] = useState(false);
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
+
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => setOpen(false);
+  const [expandedImage, setExpandedImage] = useState({});
+
+  const styledModel = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 'auto',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
 
   const handleInputQueryChange = (value) => {
     setInputQuery(value);
@@ -46,6 +64,11 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     } catch (error) {
       console.error('Error fetching image data:', error);
     }
+  }
+
+  const handleExpandImage = (imageId, filename, imageData) => {
+    setOpen(true);
+    setExpandedImage({ id: imageId, filename: filename, image_data: imageData });
   }
 
   const handleChangePage = (event, newPage) => {
@@ -155,7 +178,14 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
               <ImageListItemBar
                 title={image.filename.replace("images/keyframes/", "")}
                 position="top"
-
+                actionIcon={
+                  <IconButton
+                    aria-label={`Delete ${image.filename}`}
+                    onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
+                  >
+                    <AspectRatioIcon sx={{ color: 'white' }} />
+                  </IconButton>
+                }
               />
               <Grid item>
                 <Checkbox
@@ -171,12 +201,39 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
                 loading="lazy"
                 alt={`not found -${image['filename']}`}
               />
-
-
             </ImageListItemWithStyle>
           ))}
         </ImageList>
       </Grid>
+      <Modal
+        keepMounted
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="keep-mounted-modal-title"
+        aria-describedby="keep-mounted-modal-description"
+      >
+        {expandedImage && (
+          <Box
+            sx={{
+              ...styledModel,
+              width: 'auto',
+              height: 'auto',
+            }}
+          >
+            <ImageListItemBar
+              // title={expandedImage['filename'].replace("images/keyframes/", "")}
+              position="top"
+            />
+            <img
+              style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
+              src={`data:image/jpeg;base64,${expandedImage.image_data}`}
+              srcSet={`data:image/jpeg;base64,${expandedImage.image_data}`}
+              loading="lazy"
+              alt={`not found -${expandedImage.filename}`}
+            />
+          </Box>
+        )}
+      </Modal>
       <Grid container justifyContent="center" alignItems="center">
         <Pagination
           count={Math.ceil(imageLength / imagePerPage)}
@@ -186,6 +243,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
           onChange={handleChangePage}
         />
       </Grid>
+
     </React.Fragment>
   );
 }

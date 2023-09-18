@@ -1,12 +1,17 @@
 import styled from "@emotion/styled";
+import AspectRatioIcon from '@mui/icons-material/AspectRatio';
+
 import {
+  Box,
   Checkbox,
   Grid,
+  IconButton,
   ImageList,
   ImageListItem,
-  ImageListItemBar
+  ImageListItemBar,
+  Modal
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
@@ -16,8 +21,24 @@ const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   },
 }));
 
+const styledModel = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 'auto',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
 function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
   console.log('subimages', subImages)
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => setOpen(false);
+  const [expandedImage, setExpandedImage] = useState({});
 
   useEffect(() => {
   }, []);
@@ -42,7 +63,12 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
     });
   };
 
-  
+  const handleExpandImage = (imageId, filename, imageData) => {
+    setOpen(true);
+    setExpandedImage({ id: imageId, filename: filename, image_data: imageData });
+  }
+
+
   const isImageSelected = (imageId) => {
     return selectedImages.some((image) => image._id === imageId);
   };
@@ -62,6 +88,14 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
               <ImageListItemBar
                 title={image.filename.replace("images/keyframes/", "")}
                 position="top"
+                actionIcon={
+                  <IconButton
+                    aria-label={`Delete ${image.filename}`}
+                    onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
+                  >
+                    <AspectRatioIcon sx={{ color: 'white' }} />
+                  </IconButton>
+                }
               />
               <img
                 src={`data:image/jpeg;base64,${image['image_data']}`}
@@ -73,6 +107,35 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
             </ImageListItemWithStyle>
           ))}
         </ImageList>
+        <Modal
+          keepMounted
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="keep-mounted-modal-title"
+          aria-describedby="keep-mounted-modal-description"
+        >
+          {expandedImage && (
+            <Box
+              sx={{
+                ...styledModel,
+                width: 'auto',
+                height: 'auto',
+              }}
+            >
+              <ImageListItemBar
+                // title={expandedImage['filename'].replace("images/keyframes/", "")}
+                position="top"
+              />
+              <img
+                style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
+                src={`data:image/jpeg;base64,${expandedImage.image_data}`}
+                srcSet={`data:image/jpeg;base64,${expandedImage.image_data}`}
+                loading="lazy"
+                alt={`not found-${expandedImage.filename}`}
+              />
+            </Box>
+          )}
+        </Modal>
       </React.Fragment>
     );
   }
