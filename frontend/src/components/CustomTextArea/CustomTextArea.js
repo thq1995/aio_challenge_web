@@ -20,25 +20,41 @@ const StyledTextarea = styled(TextareaAutosize)({
 
 
 const CustomTextarea = ({ value, onChange, clearInput, onSubmit }) => {
+  const handleSubmit = event => {
+    event.preventDefault();
+    console.log("submit copleted")
+    onSubmit();
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.keyCode === 13 && !event.shiftKey) {
+      event.preventDefault();
+      onSubmit();
+    }
+  };
+
   return (
     <React.Fragment>
-      <StyledTextarea
-        onChange={(e) => onChange(e.target.value)}
-        value={value}
-        minRows={2}
-        maxRows={10}
-        aria-label="textarea"
-        placeholder="Enter your text to search..."
-      />
+      <form onSubmit={handleSubmit}>
+        <StyledTextarea
+          onChange={(e) => onChange(e.target.value)}
+          value={value}
+          minRows={2}
+          maxRows={10}
+          aria-label="textarea"
+          placeholder="Enter your text to search..."
+          onKeyDown={handleKeyDown}
+        />
 
-      <div className="button-container" >
-        <Button variant="contained" color="primary" onClick={onSubmit}>
-        Search
-        </Button>
-        <Button variant="contained" color="primary" onClick={clearInput}>
-          Clear
-        </Button>
-      </div>
+        <div className="button-container" >
+          <Button variant="contained" color="primary" type="submit">
+            Search
+          </Button>
+          <Button variant="contained" color="primary" onClick={clearInput}>
+            Clear
+          </Button>
+        </div>
+      </form>
     </React.Fragment>
   );
 };

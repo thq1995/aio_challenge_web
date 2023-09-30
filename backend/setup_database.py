@@ -35,7 +35,7 @@ def upload_images_to_db(path):
         for group_keyframes in sorted(os.listdir(keyframes_src)):
             group_keyframes = os.path.join(keyframes_src, group_keyframes)
             pbar.set_description("Uploading %s" % group_keyframes)
-            for sub_keyframes in sorted(os.listdir(group_keyframes)):
+            for sub_keyframes in tqdm(sorted(os.listdir(group_keyframes))):
                 video_frames = os.path.join(group_keyframes, sub_keyframes)
                 if os.path.isdir(video_frames):
                     for frame_name in sorted(os.listdir(video_frames)):
@@ -59,7 +59,8 @@ def upload_images_to_db(path):
 
 if __name__ == "__main__": 
     # this is the path for database
-    database_directory ="/media/t-dragon/Storage/Development/Data_GoogleDrive/keyframes"
+    database_directory ="/media/t-dragon/Data-Machine-Lea/Development/keyframes"
     path = os.path.join(database_directory)
     upload_images_to_db(path)
+    
 
