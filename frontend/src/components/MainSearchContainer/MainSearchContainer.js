@@ -1,4 +1,4 @@
-import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, scopedCssBaselineClasses, styled } from "@mui/material";
+import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, styled } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from 'react-router-dom';
