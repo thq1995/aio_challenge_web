@@ -4,12 +4,8 @@ import {
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import React, { useState } from "react";
-import ImagePicker from "../ImagePicker/ImagePicker";
-import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
-import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
-import SketchCanvas from "../SketchCanvas/SketchCanvas";
-import CustomTextarea from "../CustomTextArea/CustomTextArea";
 import BasicTabs from "../CustomTabPanel/CustomTabPanel";
+import ImagePicker from "../ImagePicker/ImagePicker";
 
 function Home() {
   const [subImages, setSubImages] = useState([]);

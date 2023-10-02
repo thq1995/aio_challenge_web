@@ -11,11 +11,13 @@ import React, { useState } from "react";
 import LoginModal from "../Login/Login";
 import LogoutDialog from "../LogoutDialog/LogoutDialog";
 import "./Navigation.css";
+import WelcomePopup from "../WelcomePopup/WelcomePopup";
 
 function Navigation() {
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const [username, setUsername] = useState('');
   const [open, setOpen] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -105,7 +107,7 @@ function Navigation() {
             {isLoggedIn ? (
               <Link
                 variant="button"
-                color="#ff8c00 "
+                color="#FFAE42 "
                 sx={{ my: 1, mx: 1.5, fontFamily: 'Valorax' }}
               >
                 Welcome {username}
@@ -138,8 +140,15 @@ function Navigation() {
               </Button>
             )}
             <LoginModal open={openLoginModal} onClose={handleCloseLoginModal} isLogin={isLoggedIn}
-              setIsLoggedIn={setIsLoggedIn} username={username} setUsername={setUsername} />
+              setIsLoggedIn={setIsLoggedIn} username={username} setUsername={setUsername} showWelcomePopup={showWelcomePopup} setShowWelcomePopup={setShowWelcomePopup} />
             <LogoutDialog open={open} handleClose={handleClose} handleLogout={handleLogout} />
+
+            {showWelcomePopup && (
+              <WelcomePopup
+                username={username}
+                onClose={() => setShowWelcomePopup(false)}
+              />
+            )}
           </nav>
         </Toolbar>
       </AppBar>

@@ -2,7 +2,6 @@ import { Grid, Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Typography from '@mui/material/Typography';
 import React from "react";
 import MainSearchContainer from '../MainSearchContainer/MainSearchContainer';
 
@@ -62,6 +61,7 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
                 <Tab label="OCR" {...a11yProps(1)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="ASR" {...a11yProps(2)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="Sketch" {...a11yProps(3)} sx={{ color: 'black', fontWeight: 'bold' }} />
+                <Tab label="Object Detection" {...a11yProps(4)} sx={{ color: 'black', fontWeight: 'bold' }} />
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -74,7 +74,10 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
               This is ASR Search
             </CustomTabPanel>
             <CustomTabPanel value={value} index={3}>
-              This is ASR Search
+              This is Sketch
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={4}>
+              This is Object detection
             </CustomTabPanel>
           </Box>
         </Paper>

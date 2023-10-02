@@ -1,27 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { styled } from '@mui/system';
-
-// const Button = styled('button')(
-//   ({ theme }) => css`
-//     background-color: #1976D2;
-//     color: white;
-//     border: none;
-//     padding: 10px 20px;
-//     cursor: pointer;
-//   `
-// );
-
-const useStyles = {
-  icon: {
-    fontSize: '48px',
-  },
-  username: {
-    fontSize: '24px',
-  },
-};
 
 
-const LogoutDialog = ({ open, handleClose, handleLogout }) => {
+const LogoutDialog = ({ open, handleClose, handleLogout, show}) => {
 
   return (
     <Dialog open={open} onClose={handleClose}>

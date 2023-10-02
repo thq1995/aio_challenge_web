@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import { Grid, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import Button from '@mui/material/Button';
-import { Grid, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
-const LoginModal = ({ open, onClose, isLogin, setIsLoggedIn, username, setUsername}) => {
+const LoginModal = ({ open, onClose, isLogin, setIsLoggedIn, username, setUsername, showWelcomePopup, setShowWelcomePopup}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  
   useEffect(() => {
     const storedIsLoggedIn = sessionStorage.getItem('isLoggedIn');
     if (storedIsLoggedIn === 'true') {
       setIsLoggedIn(true);
       const storedUsername = sessionStorage.getItem('username');
-      setUsername(storedUsername || ''); // Load the username if available
+      setUsername(storedUsername || ''); 
     }
-  }, []);
+  }, [setIsLoggedIn, setUsername ]);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -43,6 +43,8 @@ const LoginModal = ({ open, onClose, isLogin, setIsLoggedIn, username, setUserna
           sessionStorage.setItem('isLoggedIn', 'true');
           sessionStorage.setItem('username', email);
           sessionStorage.setItem('sessionId', sessionId);
+
+          setShowWelcomePopup(true);
         } else {
           console.error('Login failed');
           alert('failed');
@@ -57,6 +59,8 @@ const LoginModal = ({ open, onClose, isLogin, setIsLoggedIn, username, setUserna
   };
 
   return (
+
+    
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <h2>Login</h2>
@@ -95,6 +99,8 @@ const LoginModal = ({ open, onClose, isLogin, setIsLoggedIn, username, setUserna
         </form>
       </DialogContent>
     </Dialog>
+
+    
   );
 };
 
