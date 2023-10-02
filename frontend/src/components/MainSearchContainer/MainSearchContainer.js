@@ -186,7 +186,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   };
 
   return (
-    <React.Fragment>
+    <div>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData} />
       <IconButton
         aria-label="Subsequent Frames"
@@ -287,7 +287,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
         </Box>
       </Drawer>
 
-    </React.Fragment>
+    </div>
   );
 }
 

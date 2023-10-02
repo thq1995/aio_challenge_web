@@ -1,26 +1,116 @@
 import {
   AppBar,
+  Avatar,
+  Button,
   Link,
   Toolbar,
   Typography
 } from "@mui/material";
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import LoginModal from "../Login/Login";
+import LogoutDialog from "../LogoutDialog/LogoutDialog";
 import "./Navigation.css";
 
 function Navigation() {
+  const [openLoginModal, setOpenLoginModal] = useState(false);
+  const [username, setUsername] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+
+    setOpen(false);
+  };
+
+  const handleLogout = () => {
+    axios
+      .get('https://eventretrieval.one/api/v1/logout')
+      .then((response) => {
+        if (response.status === 200) {
+          setIsLoggedIn(false);
+          setUsername('');
+          sessionStorage.setItem('isLoggedIn', isLoggedIn);
+          sessionStorage.setItem('username', '');
+          sessionStorage.setItem('sessionId', '');
+        } else {
+          console.error('Login failed');
+          alert('failed');
+        }
+      })
+      .catch((error) => {
+        console.error('An error occurred:', error);
+      });
+
+    setOpen(false);
+  };
+
+
+  const handleOpenLoginModal = () => {
+    setOpenLoginModal(true);
+  };
+
+  const handleCloseLoginModal = () => {
+    setOpenLoginModal(false);
+  };
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+  function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name[0]),
+      },
+      children: `${name[0]}`,
+    };
+  }
+
+  function stringToColor(string) {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = '#';
+
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+
+    return color;
+  }
+
+
   return (
     <React.Fragment>
       <AppBar
         position="static"
         color="default"
         elevation={0}
-        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}`, backgroundColor: '#388087'}}
+        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}`, backgroundColor: '#388087' }}
       >
-        <Toolbar sx={{ flexWrap: "wrap"}}>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1, fontFamily: 'Valorax'}}>
-            <a href="/home" style={{textDecoration: 'none', color: '#FFFFFF'}}> AIO - Pending</a>
+        <Toolbar sx={{ flexWrap: "wrap" }}>
+          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1, fontFamily: 'Valorax' }}>
+            <a href="/home" style={{ textDecoration: 'none', color: '#FFFFFF' }}> AIO - Pending</a>
           </Typography>
           <nav>
+            {isLoggedIn ? (
+              <Link
+                variant="button"
+                color="#ff8c00 "
+                sx={{ my: 1, mx: 1.5, fontFamily: 'Valorax' }}
+              >
+                Welcome {username}
+              </Link>
+            ) : null}
             <Link
               variant="button"
               color="#FFFFFF"
@@ -37,6 +127,19 @@ function Navigation() {
             >
               About
             </Link>
+
+            {isLoggedIn ? (
+              <Button onClick={handleClickOpen} color="primary">
+                <Avatar {...stringAvatar(username)} />
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={handleOpenLoginModal}>
+                Login
+              </Button>
+            )}
+            <LoginModal open={openLoginModal} onClose={handleCloseLoginModal} isLogin={isLoggedIn}
+              setIsLoggedIn={setIsLoggedIn} username={username} setUsername={setUsername} />
+            <LogoutDialog open={open} handleClose={handleClose} handleLogout={handleLogout} />
           </nav>
         </Toolbar>
       </AppBar>

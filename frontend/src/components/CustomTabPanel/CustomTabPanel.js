@@ -19,7 +19,7 @@ function CustomTabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -58,10 +58,10 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
           <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
-                <Tab label="CLIP" {...a11yProps(0)} sx={{color: 'black', fontWeight: 'bold'}} />
-                <Tab label="OCR" {...a11yProps(1)} sx={{color: 'black', fontWeight: 'bold'}}/>
-                <Tab label="ASR" {...a11yProps(2)} sx={{color: 'black', fontWeight: 'bold'}} />
-                <Tab label="Sketch" {...a11yProps(3)} sx={{color: 'black', fontWeight: 'bold'}} />
+                <Tab label="CLIP" {...a11yProps(0)} sx={{ color: 'black', fontWeight: 'bold' }} />
+                <Tab label="OCR" {...a11yProps(1)} sx={{ color: 'black', fontWeight: 'bold' }} />
+                <Tab label="ASR" {...a11yProps(2)} sx={{ color: 'black', fontWeight: 'bold' }} />
+                <Tab label="Sketch" {...a11yProps(3)} sx={{ color: 'black', fontWeight: 'bold' }} />
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
