@@ -16,10 +16,6 @@ function Home() {
   const [selectedImages, setSelectedImages] = useState([]);
   console.log('home-selectd-images-picker', selectedImages)
 
-  // useEffect = () => {
-
-  // }
-
   return (
     <div>
       <Typography

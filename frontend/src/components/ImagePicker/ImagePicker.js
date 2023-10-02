@@ -100,7 +100,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
       <React.Fragment>
         <h3>Image Submission Sites</h3>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <TextField
               id="outlined-basic"
               label="Submission File Name"
@@ -109,7 +109,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
               onChange={handleTextFieldChange}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Button
               variant="contained"
               onClick={handlingSubmission}
@@ -118,13 +118,22 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
               Download CSV
             </Button>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Button
               variant="contained"
               onClick={handlingClearSelectedImages}
               fullWidth
             >
               Clear Selected Images
+            </Button>
+          </Grid>
+          <Grid item xs={3}>
+            <Button
+              variant="contained"
+              onClick={handlingClearSelectedImages}
+              fullWidth
+            >
+              Submit to System
             </Button>
           </Grid>
         </Grid>

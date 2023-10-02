@@ -79,7 +79,7 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
   if (subImages !== undefined) {
     return (
       <React.Fragment>
-        <ImageList sx={{ width: 'auto', height: 'auto' }} cols={2}>
+        <ImageList sx={{ width: 'auto', height: 'auto' }} cols={4}>
           {subImages.map((image) => (
             <ImageListItemWithStyle key={image['_id']} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
               <Grid item>

@@ -1,10 +1,17 @@
-import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, styled } from "@mui/material";
+import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, Typography, styled } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import CustomTextarea from "../CustomTextArea/CustomTextArea";
-import "./MainSearchContainer.css"
-import AspectRatioIcon from '@mui/icons-material/AspectRatio';
+import "./MainSearchContainer.css";
+
+import AspectRatioIcon from "@mui/icons-material/AspectRatio";
+import ImageSearchTwoToneIcon from '@mui/icons-material/ImageSearchTwoTone';
+
+import {
+  Drawer
+} from "@mui/material";
+import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
   "&:hover": {
@@ -22,6 +29,12 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const [imagePerPage, setImagePerPage] = useState(32);
   const [clearPage, setClearPage] = useState(false);
   const [page, setPage] = useState(1);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   const navigate = useNavigate();
 
   const [open, setOpen] = React.useState(false);
@@ -175,7 +188,15 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   return (
     <React.Fragment>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData} />
-      <Grid container sx={{ pt: 3}}>
+      <IconButton
+        aria-label="Subsequent Frames"
+        onClick={toggleDrawer}
+        style={{ color: 'blue' }}
+      >
+        <ImageSearchTwoToneIcon />
+      </IconButton>
+      <Typography variant="caption">Subsequent Frames</Typography>
+      <Grid container sx={{ pt: 3, overflow: 'auto' }}>
         {imagesList && imagesList.length > 0 ? (
           <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
             {imagesList.map((image) => (
@@ -249,6 +270,22 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
           onChange={handleChangePage}
         />
       </Grid>
+
+
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={toggleDrawer}
+      >
+        <Box
+          sx={{
+            width: 900, // Set the width of the drawer as per your design
+            padding: 2,
+          }}
+        >
+          <SubsequentSearch subImages={subImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
+        </Box>
+      </Drawer>
 
     </React.Fragment>
   );

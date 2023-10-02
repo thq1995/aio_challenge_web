@@ -1,12 +1,10 @@
-import React, { useState } from "react";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import { Grid, Paper } from '@mui/material';
-import ImagePicker from '../ImagePicker/ImagePicker';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import React from "react";
 import MainSearchContainer from '../MainSearchContainer/MainSearchContainer';
-import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,25 +58,22 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
           <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
-                <Tab label="CLIP" {...a11yProps(0)} />
-                <Tab label="SS" {...a11yProps(1)} />
-                <Tab label="OCR" {...a11yProps(2)} />
-                <Tab label="ASR" {...a11yProps(2)} />
+                <Tab label="CLIP" {...a11yProps(0)} sx={{color: 'black', fontWeight: 'bold'}} />
+                <Tab label="OCR" {...a11yProps(1)} sx={{color: 'black', fontWeight: 'bold'}}/>
+                <Tab label="ASR" {...a11yProps(2)} sx={{color: 'black', fontWeight: 'bold'}} />
+                <Tab label="Sketch" {...a11yProps(3)} sx={{color: 'black', fontWeight: 'bold'}} />
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
               <MainSearchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-              <SubsequentSearch subImages={subImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={2}>
               This is OCR Search
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={3}>
+            <CustomTabPanel value={value} index={2}>
               This is ASR Search
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={4}>
+            <CustomTabPanel value={value} index={3}>
               This is ASR Search
             </CustomTabPanel>
           </Box>
