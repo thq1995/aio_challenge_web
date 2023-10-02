@@ -1,4 +1,4 @@
-import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, styled } from "@mui/material";
+import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, scopedCssBaselineClasses, styled } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from 'react-router-dom';
@@ -25,7 +25,10 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const navigate = useNavigate();
 
   const [open, setOpen] = React.useState(false);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setExpandedImage({});
+  }
   const [expandedImage, setExpandedImage] = useState({});
 
   const styledModel = {
@@ -92,6 +95,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
       console.log('image_response', response)
       setImagesList(response.data['result']);
       setImageLength(response.data['images_length'])
+
     } catch (error) {
       console.error('Error fetching image data:', error);
     }
@@ -172,68 +176,70 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     <React.Fragment>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData} />
       <Grid container sx={{ pt: 3 }}>
-        <ImageList sx={{ width: 'auto', height: 'auto' }} cols={5} rowHeight={'auto'} >
-          {imagesList.map((image) => (
-            <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
-              <ImageListItemBar
-                title={image.filename.replace("images/keyframes/", "")}
-                position="top"
-                actionIcon={
-                  <IconButton
-                    aria-label={`Delete ${image.filename}`}
-                    onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
-                  >
-                    <AspectRatioIcon sx={{ color: 'white' }} />
-                  </IconButton>
-                }
-              />
-              <Grid item>
-                <Checkbox
-                  checked={isImageSelected(image._id)}
-                  onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
+        {imagesList && imagesList.length > 0 ? (
+          <ImageList sx={{ width: 'auto', height: 'auto' }} cols={5} rowHeight={'auto'} >
+            {imagesList.map((image) => (
+              <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
+                <ImageListItemBar
+                  title={image.filename.replace("images/keyframes/", "")}
+                  position="top"
+                  actionIcon={
+                    <IconButton
+                      aria-label={`Delete ${image.filename}`}
+                      onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
+                    >
+                      <AspectRatioIcon sx={{ color: 'white' }} />
+                    </IconButton>
+                  }
                 />
-              </Grid>
-              <img
-                onClick={() => fetchImageSearch(image['_id'], image['filename'])}
-                style={{ cursor: 'pointer' }}
-                src={`data:image/jpeg;base64,${image['image_data']}`}
-                srcSet={`data:image/jpeg;base64,${image['image_data']}`}
-                loading="lazy"
-                alt={`not found -${image['filename']}`}
-              />
-            </ImageListItemWithStyle>
-          ))}
-        </ImageList>
+                <Grid item>
+                  <Checkbox
+                    checked={isImageSelected(image._id)}
+                    onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
+                  />
+                </Grid>
+                <img
+                  onClick={() => fetchImageSearch(image['_id'], image['filename'])}
+                  style={{ cursor: 'pointer' }}
+                  src={`data:image/jpeg;base64,${image['image_data']}`}
+                  alt={`not found -${image['filename']}`}
+                />
+              </ImageListItemWithStyle>
+            ))}
+          </ImageList>
+        ) : (
+          null
+        )}
       </Grid>
-      <Modal
+
+      {Object.keys(expandedImage).length > 0 && <Modal
         keepMounted
         open={open}
         onClose={handleClose}
         aria-labelledby="keep-mounted-modal-title"
         aria-describedby="keep-mounted-modal-description"
       >
-        {expandedImage && (
-          <Box
-            sx={{
-              ...styledModel,
-              width: 'auto',
-              height: 'auto',
-            }}
-          >
-            <ImageListItemBar
-              // title={expandedImage['filename'].replace("images/keyframes/", "")}
-              position="top"
-            />
-            <img
-              style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
-              src={`data:image/jpeg;base64,${expandedImage.image_data}`}
-              srcSet={`data:image/jpeg;base64,${expandedImage.image_data}`}
-              loading="lazy"
-              alt={`not found -${expandedImage.filename}`}
-            />
-          </Box>
-        )}
+
+        <Box
+          sx={{
+            ...styledModel,
+            width: 'auto',
+            height: 'auto',
+          }}
+        >
+          <ImageListItemBar
+            // title={expandedImage['filename'].replace("images/keyframes/", "")}
+            position="top"
+          />
+          <img
+            style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
+            src={`data:image/jpeg;base64,${expandedImage.image_data}`}
+            loading="lazy"
+            alt={`not found -${expandedImage.filename}`}
+          />
+        </Box>
       </Modal>
+      }
       <Grid container justifyContent="center" alignItems="center">
         <Pagination
           count={Math.ceil(imageLength / imagePerPage)}

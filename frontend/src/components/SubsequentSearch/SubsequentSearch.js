@@ -37,7 +37,10 @@ const styledModel = {
 function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
   console.log('subimages', subImages)
   const [open, setOpen] = React.useState(false);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setExpandedImage({});
+  }
   const [expandedImage, setExpandedImage] = useState({});
 
   useEffect(() => {
@@ -99,7 +102,6 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
               />
               <img
                 src={`data:image/jpeg;base64,${image['image_data']}`}
-                srcSet={`data:image/jpeg;base64,${image['image_data']}`}
                 alt={image._id}
                 loading="la
                 zy"
@@ -107,35 +109,34 @@ function SubsequentSearch({ subImages, selectedImages, setSelectedImages }) {
             </ImageListItemWithStyle>
           ))}
         </ImageList>
-        <Modal
+        {Object.keys(expandedImage).length > 0 && <Modal
           keepMounted
           open={open}
           onClose={handleClose}
           aria-labelledby="keep-mounted-modal-title"
           aria-describedby="keep-mounted-modal-description"
         >
-          {expandedImage && (
-            <Box
-              sx={{
-                ...styledModel,
-                width: 'auto',
-                height: 'auto',
-              }}
-            >
-              <ImageListItemBar
-                // title={expandedImage['filename'].replace("images/keyframes/", "")}
-                position="top"
-              />
-              <img
-                style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
-                src={`data:image/jpeg;base64,${expandedImage.image_data}`}
-                srcSet={`data:image/jpeg;base64,${expandedImage.image_data}`}
-                loading="lazy"
-                alt={`not found-${expandedImage.filename}`}
-              />
-            </Box>
-          )}
+
+          <Box
+            sx={{
+              ...styledModel,
+              width: 'auto',
+              height: 'auto',
+            }}
+          >
+            <ImageListItemBar
+              // title={expandedImage['filename'].replace("images/keyframes/", "")}
+              position="top"
+            />
+            <img
+              style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
+              src={`data:image/jpeg;base64,${expandedImage.image_data}`}
+              loading="lazy"
+              alt={`not found -${expandedImage.filename}`}
+            />
+          </Box>
         </Modal>
+        }
       </React.Fragment>
     );
   }

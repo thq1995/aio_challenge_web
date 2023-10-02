@@ -161,7 +161,6 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
                           />
                           <img
                             src={`data:image/jpeg;base64,${image['image_data']}`}
-                            srcSet={`data:image/jpeg;base64,${image['image_data']}`}
                             alt={image._id}
                             loading="lazy"
                           />
