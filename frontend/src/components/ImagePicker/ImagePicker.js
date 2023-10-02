@@ -134,7 +134,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
             {(provided) => (
               <ImageList
                 sx={{ width: 'auto', height: 'auto' }}
-                cols={5}
+                cols={6}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >

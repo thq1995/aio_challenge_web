@@ -175,9 +175,9 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   return (
     <React.Fragment>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData} />
-      <Grid container sx={{ pt: 3 }}>
+      <Grid container sx={{ pt: 3}}>
         {imagesList && imagesList.length > 0 ? (
-          <ImageList sx={{ width: 'auto', height: 'auto' }} cols={5} rowHeight={'auto'} >
+          <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
             {imagesList.map((image) => (
               <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
                 <ImageListItemBar

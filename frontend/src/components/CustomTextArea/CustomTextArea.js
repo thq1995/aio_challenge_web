@@ -5,7 +5,7 @@ import "./CustomTextArea.css";
 import React from "react";
 
 const StyledTextarea = styled(TextareaAutosize)({
-  width: '95%',
+  width: '98%',
   padding: '12px',
   fontSize: '16px',
   border: '4px solid black',
@@ -20,7 +20,7 @@ const StyledTextarea = styled(TextareaAutosize)({
 
 
 const CustomTextarea = ({ value, onChange, clearInput, onSubmit }) => {
-  const handleSubmit = event => {
+ const handleSubmit = event => {
     event.preventDefault();
     console.log("submit copleted")
     onSubmit();
@@ -37,10 +37,8 @@ const CustomTextarea = ({ value, onChange, clearInput, onSubmit }) => {
     <React.Fragment>
       <form onSubmit={handleSubmit}>
         <StyledTextarea
-          onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
           value={value}
-          minRows={2}
-          maxRows={10}
           aria-label="textarea"
           placeholder="Enter your text to search..."
           onKeyDown={handleKeyDown}

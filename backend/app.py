@@ -34,7 +34,7 @@ def getTextSearch():
     text_query = request.args.get('textquery')
    
 
-    idx_image_list = MyFaiss.text_search(text_query, k=100)
+    idx_image_list = MyFaiss.text_search(text_query, k=200)
 
     data = get_images_by_ids(idx_image_list.tolist())
     print('testing_data')
@@ -44,17 +44,8 @@ def getTextSearch():
 @app.route('/home/main/imgsearch')
 def image_search():
     print("image search")
-    pagefile = []
     id_query = int(request.args.get('imgid'))
-    idx_image_list = MyFaiss.image_search(id_query, k=100)
-
-    # imgperindex = 100 
-
-    # for imgpath, id in zip(list_image_paths, list_ids):
-    #     pagefile.append({'imgpath': imgpath, 'id': int(id)})
-
-    # data = {'num_page': int(LenDictPath/imgperindex)+1, 'pagefile': pagefile}
-
+    idx_image_list = MyFaiss.image_search(id_query, k=200)
     data = get_images_by_ids(idx_image_list.tolist())
 
     return data
@@ -89,24 +80,6 @@ def get_all_images():
     image_json['images_length'] = images_length
     return json.dumps(image_json)
     
-
-    
-    # Convert the MongoDB documents to a list of dictionaries
-    image_list = [image for image in images]
-    
-    for image in image_list:
-        image_binary = image['image_data']
-        image_base64 = base64.b64encode(image['image_data']).decode('utf-8')
-        image['image_data'] = image_base64
-        
-  
-    # print((type(images_list[0]['image_data'])))
-    image_json = {}
-    image_json ['images_length'] = images_length
-    image_json['result'] = image_list
-
-    return json.dumps(image_json)
-
 @app.get('/subimgsearch')
 def get_subsequent_images():
     image_id = int(request.args.get("imageId"))
@@ -122,9 +95,6 @@ def get_subsequent_images():
     data = get_images_by_ids(index_list)
     return data
     
-    
-    
-
 def get_images_by_ids(index_list):
     images = []
     images_list = images_collection.find({"_id": {"$in": index_list}})

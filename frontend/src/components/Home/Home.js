@@ -7,14 +7,17 @@ import React, { useState } from "react";
 import ImagePicker from "../ImagePicker/ImagePicker";
 import MainSearchContainer from "../MainSearchContainer/MainSearchContainer";
 import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
+import SketchCanvas from "../SketchCanvas/SketchCanvas";
+import CustomTextarea from "../CustomTextArea/CustomTextArea";
+import BasicTabs from "../CustomTabPanel/CustomTabPanel";
 
 function Home() {
   const [subImages, setSubImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   console.log('home-selectd-images-picker', selectedImages)
-  
+
   // useEffect = () => {
-    
+
   // }
 
   return (
@@ -29,59 +32,7 @@ function Home() {
       >
         Image Text Retrieval
       </Typography>
-      <Grid container spacing={2}>
-        {/* left container */}
-        <Grid item xs={12} md={8}>
-          <Paper
-            elevation={1}
-            sx={{
-              p: 2.5,
-              display: "flex",
-              flexDirection: "column",
-              borderRadius: "8px",
-              height: 'auto'
-            }}
-          >
-            <MainSearchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
-          </Paper>
-        </Grid>
-
-        {/* Right containers */}
-        <Grid item xs={12} md={4}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Paper
-                elevation={1}
-                sx={{
-                  p: 1.5,
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: "8px",
-                  height: '400px',
-                  backgroundColor: '#'
-                }}
-                style={{ padding: '20px' }}
-              >
-                <SubsequentSearch subImages={subImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper
-                elevation={1}
-                sx={{
-                  p: 1.5,
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: "8px",
-                  height: '450px',
-                  backgroundColor: '#'
-                }}
-                style={{ padding: '20px' }}
-              >
-              </Paper>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Grid container spacing={2} >
         <Grid item xs={12} sm={12}>
           <Paper
             elevation={1}
@@ -90,7 +41,7 @@ function Home() {
               display: "flex",
               flexDirection: "column",
               borderRadius: "8px",
-              height: '400px',
+              height: '500px',
               backgroundColor: '#'
             }}
             style={{ padding: '20px' }}
@@ -99,6 +50,7 @@ function Home() {
           </Paper>
         </Grid>
       </Grid>
+      <BasicTabs selectedImages={selectedImages} setSelectedImages={setSelectedImages} subImages={subImages} setSubImages={setSubImages} />
     </div>
   );
 }
