@@ -9,12 +9,12 @@ const styles = {
   height: "600px"
 };
 
-function SketchCanvas() {
+function SketchCanvas({inputSketchQuery, imagesList, setImagesList}) {
   const canvasRef = React.useRef(null);
 
   const searchSketch = async () => {
     canvasRef.current.exportImage("jpg").then(data => {
-      const sketchData = { 'sketchData': data }
+      const sketchData = { 'sketchData': data, 'query': inputSketchQuery }
       axios.post(
         `http://localhost:5000/process_sketch`
         , sketchData, {
@@ -22,7 +22,7 @@ function SketchCanvas() {
           'Content-Type': 'application/json',
         }
       }).then(response => {
-        console.log(response.data['message'])
+        setImagesList(response.data['result']);
       }).catch(error => {
         console.log('error', error)
       })

@@ -23,8 +23,11 @@ images_collection = db['images']
 
 CORS(app)
 bin_file='index.bin'
+sketch_bin='sketch_index.bin'
 
-MyFaiss = Myfaiss(bin_file,'cpu', Translation(), "ViT-L/14@336px")
+clip_model = Myfaiss(bin_file,'cpu', Translation(), "ViT-L/14@336px")
+sketch_model = Myfaiss(sketch_bin, 'cpu',Translation(), "ViT-B-16", isSketch=True)
+
 
 with open('kf_path.json') as json_file:
     json_dict = json.load(json_file)
@@ -37,7 +40,7 @@ def getTextSearch():
     text_query = request.args.get('textquery')
    
 
-    idx_image_list = MyFaiss.text_search(text_query, k=200)
+    idx_image_list = clip_model.text_search(text_query, k=200)
 
     data = get_images_by_ids(idx_image_list.tolist())
     print('testing_data')
@@ -48,7 +51,7 @@ def getTextSearch():
 def image_search():
     print("image search")
     id_query = int(request.args.get('imgid'))
-    idx_image_list = MyFaiss.image_search(id_query, k=200)
+    idx_image_list = clip_model.image_search(id_query, k=200)
     data = get_images_by_ids(idx_image_list.tolist())
 
     return data
@@ -99,12 +102,9 @@ def get_subsequent_images():
     return data
     
 def get_images_by_ids(index_list):
-    images = []
     images_list = images_collection.find({"_id": {"$in": index_list}})
-
     sorted_images = sorted(images_list, key=lambda img: index_list.index(img["_id"]))
     sorted_id = [image["_id"] for image in sorted_images]
-    print('this is sorted ids', sorted_id)
 
     image_list = [image for image in sorted_images]
 
@@ -117,7 +117,6 @@ def get_images_by_ids(index_list):
     image_json = {}
     image_json['result'] = image_list
     image_json ['images_length'] = images_length
-    print('images_length', image_json ['images_length'] )
     return json.dumps(image_json)
 
 
@@ -125,12 +124,16 @@ def get_images_by_ids(index_list):
 def process_sketch():
     data = request.get_json()
     sketch_data = data.get('sketchData')
+    query = data.get('query')
     sketch_data = sketch_data.replace("data:image/png;base64,", "")
-    with open("imageToSave.jpg", "wb") as imgFile:
+    with open("temp.jpg", "wb") as imgFile:
         imgFile.write(base64.b64decode(sketch_data))
 
-    result = {'message': 'success'}
-    return jsonify(result)
+    sketch_data = Image.open('temp.jpg')
+
+    idx_image_list = sketch_model.sketch_search(sketch_data, query , k=200)
+    data = get_images_by_ids(idx_image_list)
+    return data
 
 
 def create_image_from_sketch(sketch_data):

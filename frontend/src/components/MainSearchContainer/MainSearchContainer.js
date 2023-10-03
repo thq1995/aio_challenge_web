@@ -30,6 +30,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const [clearPage, setClearPage] = useState(false);
   const [page, setPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [expandedImage, setExpandedImage] = useState({});
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -42,7 +43,6 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     setOpen(false);
     setExpandedImage({});
   }
-  const [expandedImage, setExpandedImage] = useState({});
 
   const styledModel = {
     position: 'absolute',
@@ -182,7 +182,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
 
 
   const isImageSelected = (imageId) => {
-  return selectedImages.some((image) => image._id === imageId);
+    return selectedImages.some((image) => image._id === imageId);
   };
 
   return (
