@@ -149,6 +149,21 @@ def create_image_from_sketch(sketch_data):
 
     return image
 
+
+@app.route('/object_detect_search', methods=['POST'])
+def receive_data():
+    try:
+        data = request.json  # Get JSON data from the request
+        checkboxes = data.get('checkboxes', {})
+        textfields = data.get('textfields', {})
+        
+        print("Received Checkbox Data:", checkboxes)
+        print("Received Text Field Data:", textfields)
+        
+        return jsonify({'message': 'Data received successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
     

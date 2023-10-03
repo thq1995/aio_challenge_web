@@ -6,6 +6,7 @@ import React from "react";
 import MainSearchContainer from '../MainSearchContainer/MainSearchContainer';
 import SketchCanvas from '../SketchCanvas/SketchCanvas';
 import SketchContainer from '../SketchContainer/SketchContainer';
+import ObjectDetectionContainer from '../ObjectDetectionContainer/ObjectDetectionContainer';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -79,7 +80,7 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
               <SketchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={4}>
-              This is Object detection
+              <ObjectDetectionContainer/>
             </CustomTabPanel>
           </Box>
         </Paper>
