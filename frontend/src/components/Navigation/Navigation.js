@@ -18,13 +18,13 @@ function Navigation() {
   const [username, setUsername] = useState('');
   const [open, setOpen] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
-
     setOpen(false);
   };
 
@@ -33,11 +33,10 @@ function Navigation() {
       .get('https://eventretrieval.one/api/v1/logout')
       .then((response) => {
         if (response.status === 200) {
-          setIsLoggedIn(false);
           setUsername('');
-          sessionStorage.setItem('isLoggedIn', isLoggedIn);
-          sessionStorage.setItem('username', '');
-          sessionStorage.setItem('sessionId', '');
+          sessionStorage.removeItem("isLoggedIn")
+          sessionStorage.removeItem("username");
+          sessionStorage.removeItem("sessionId");
         } else {
           console.error('Login failed');
           alert('failed');
@@ -59,7 +58,6 @@ function Navigation() {
     setOpenLoginModal(false);
   };
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
   function stringAvatar(name) {
@@ -72,22 +70,24 @@ function Navigation() {
   }
 
   function stringToColor(string) {
-    let hash = 0;
-    let i;
+    if (string) {
+      let hash = 0;
+      let i;
 
-    /* eslint-disable no-bitwise */
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+      for (i = 0; i < string.length; i += 1) {
+        hash = string.charCodeAt(i) + ((hash << 5) - hash);
+      }
+
+      let color = '#';
+
+      for (i = 0; i < 3; i += 1) {
+        const value = (hash >> (i * 8)) & 0xff;
+
+        color += `00${value.toString(16)}`.slice(-2);
+      }
+      return color;
     }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
+    return;
   }
 
 
@@ -104,7 +104,7 @@ function Navigation() {
             <a href="/home" style={{ textDecoration: 'none', color: '#FFFFFF' }}> AIO - Pending</a>
           </Typography>
           <nav>
-            {isLoggedIn ? (
+            {username ? (
               <Link
                 variant="button"
                 color="#FFAE42 "
@@ -130,7 +130,7 @@ function Navigation() {
               About
             </Link>
 
-            {isLoggedIn ? (
+            { username ? (
               <Button onClick={handleClickOpen} color="primary">
                 <Avatar {...stringAvatar(username)} />
               </Button>

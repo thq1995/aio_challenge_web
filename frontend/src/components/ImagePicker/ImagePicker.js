@@ -1,8 +1,10 @@
-import { Button, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, styled } from "@mui/material";
-import React, { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { Button, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, styled } from "@mui/material";
+import axios from "axios";
+import React, { useState } from "react";
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import SubmitConfirmationPopup from "../SubmitConfirmation/SubmitConfirmation";
+import IntegrationNotistack from "../SubmitResultPopup/SubmitResultPopup";
 
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
@@ -15,6 +17,21 @@ const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
 function ImagePicker({ selectedImages, setSelectedImages }) {
   console.log('image-picker-images', selectedImages)
   const [subFileName, setSubFileName] = useState('');
+  const [openSubmitPopup, setOpenSubmitPopup] = useState(false);
+  const [submitResponseMessage, setSubmitResponseMessage] = useState([]);
+  const handleClickOpenSubmitPopup = () => {
+    const isLoggedIn = Boolean(sessionStorage.getItem("isLoggedIn"));
+    if (isLoggedIn) {
+      setOpenSubmitPopup(true);
+    }
+    else {
+      alert("Please loggin to submit")
+    }
+  }
+
+  const handleCloseSubmitPopup = () => {
+    setOpenSubmitPopup(false);
+  }
 
   const handleTextFieldChange = (event) => {
     console.log(subFileName)
@@ -22,7 +39,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
   }
 
   const handlingSubmission = () => {
-    if (selectedImages === null|| subFileName === '') {
+    if (selectedImages === null || subFileName === '') {
       alert('Please select images or fill out file submission name')
     }
     else {
@@ -42,7 +59,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
       // Create a link element for the download
       const link = document.createElement('a');
       link.href = url;
-      
+
       link.download = subFileName + ".csv";
 
       // Trigger the download
@@ -95,9 +112,65 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
     setSelectedImages([]);
   }
 
+  const handlingSubmitToSystem = async () => {
+    const messageList = []
+    if (sessionStorage.getItem("sessionId") === '') {
+      console.log('sessionId is not available');
+      return;
+    }
+
+    const sessionId = sessionStorage.getItem("sessionId");
+    console.log('sessionId', sessionId);
+    console.log(selectedImages);
+
+    // Create an array of promises for the Axios requests
+    const requests = selectedImages.map((selectedImage) => {
+      const video_id = selectedImage['filename'].split('/')[0];
+      const frame_id = selectedImage['filename'].split('/')[1].replace(".jpg", "");
+      const sessionId = sessionStorage.getItem('sessionId');
+      return axios.get(`https://eventretrieval.one/api/v1/submit`, {
+        params: {
+          item: video_id,
+          frame: frame_id,
+          session: sessionId,
+        }
+      });
+    });
+
+    try {
+      const responses = await Promise.all(requests);
+      console.log('resp', responses)
+      responses.forEach((response) => {
+        const data = {
+          submission: response.data.submission,
+          description: response.data.description,
+          status: response.status,
+          variant: response.data.submission === "WRONG" ? "error" : "success"
+        }
+        messageList.push(data);
+      });
+
+      console.log('message-list', messageList)
+    } catch (error) {
+      const errorData = {
+        submission: 'Duplicated',
+        description: 'Submission is duplicated',
+        status: 412,
+        variant: 'error'
+      }
+      messageList.push(errorData)
+      console.log('message-list-error', error)
+    }
+    setSubmitResponseMessage(messageList)
+    setOpenSubmitPopup(false);
+    setSelectedImages([]);
+  }
+
   if (selectedImages !== undefined) {
     return (
       <React.Fragment>
+        <IntegrationNotistack submitResponseMessage={submitResponseMessage} setSubmitResponseMessage={setSubmitResponseMessage} />
+
         <h3>Image Submission Sites</h3>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={3}>
@@ -130,13 +203,16 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
           <Grid item xs={3}>
             <Button
               variant="contained"
-              onClick={handlingClearSelectedImages}
               fullWidth
+              onClick={handleClickOpenSubmitPopup}
             >
               Submit to System
             </Button>
           </Grid>
         </Grid>
+
+        <SubmitConfirmationPopup open={openSubmitPopup} handleClose={handleCloseSubmitPopup} handleSubmit={handlingSubmitToSystem} />
+
 
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="selectedImages">

@@ -182,7 +182,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
 
 
   const isImageSelected = (imageId) => {
-    return selectedImages.some((image) => image._id === imageId);
+  return selectedImages.some((image) => image._id === imageId);
   };
 
   return (
