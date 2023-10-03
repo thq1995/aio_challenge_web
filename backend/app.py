@@ -12,6 +12,9 @@ import base64
 import pymongo
 from bson.json_util import dumps
 from bson import decode_all, json_util
+from PIL import Image, ImageDraw
+
+
 app = Flask(__name__)
 client = MongoClient('mongodb://localhost:27017/')
 db = client['image_db']
@@ -117,6 +120,31 @@ def get_images_by_ids(index_list):
     print('images_length', image_json ['images_length'] )
     return json.dumps(image_json)
 
+
+@app.route('/process_sketch', methods=['POST'])
+def process_sketch():
+    data = request.get_json()
+    sketch_data = data.get('sketchData')
+    sketch_data = sketch_data.replace("data:image/png;base64,", "")
+    with open("imageToSave.jpg", "wb") as imgFile:
+        imgFile.write(base64.b64decode(sketch_data))
+
+    result = {'message': 'success'}
+    return jsonify(result)
+
+
+def create_image_from_sketch(sketch_data):
+    image = Image.new('RGB', (800, 600), color='white')
+    draw = ImageDraw.Draw(image)
+
+    # Process and draw the sketch data on the image (modify as per your data format)
+    for stroke in sketch_data:
+        for i in range(len(stroke) - 1):
+            x1, y1 = stroke[i]
+            x2, y2 = stroke[i + 1]
+            draw.line([(x1, y1), (x2, y2)], fill='black', width=3)
+
+    return image
 
 if __name__ == "__main__":
     app.run(debug=True)
