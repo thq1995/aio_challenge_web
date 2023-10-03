@@ -7,6 +7,7 @@ import MainSearchContainer from '../MainSearchContainer/MainSearchContainer';
 import SketchCanvas from '../SketchCanvas/SketchCanvas';
 import SketchContainer from '../SketchContainer/SketchContainer';
 import ObjectDetectionContainer from '../ObjectDetectionContainer/ObjectDetectionContainer';
+import OCRContainer from '../OCRContainer/OCRContainer';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -62,7 +63,6 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
                 <Tab label="CLIP" {...a11yProps(0)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="OCR" {...a11yProps(1)} sx={{ color: 'black', fontWeight: 'bold' }} />
-                <Tab label="ASR" {...a11yProps(2)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="Sketch" {...a11yProps(3)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="Object Detection" {...a11yProps(4)} sx={{ color: 'black', fontWeight: 'bold' }} />
               </Tabs>
@@ -71,15 +71,12 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
               <MainSearchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-              This is OCR Search
+              <OCRContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-              This is ASR Search
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={3}>
               <SketchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={4}>
+            <CustomTabPanel value={value} index={3}>
               <ObjectDetectionContainer/>
             </CustomTabPanel>
           </Box>
