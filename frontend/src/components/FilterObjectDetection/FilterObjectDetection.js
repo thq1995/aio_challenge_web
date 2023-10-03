@@ -39,16 +39,29 @@ function FilterObjectDetection() {
 
   const handleSubmit = async () => {
     try {
-      const data = {
-        checkboxes: checkboxValues,
-        textfields: textFieldValues,
-      };
+      // Convert the values to integers for comparison
+      const totalValue = parseInt(textFieldValues.bothTextfield) || 0;
+      const femaleValue = parseInt(textFieldValues.femaleTextfield) || 0;
+      const maleValue = parseInt(textFieldValues.maleTextfield) || 0;
 
-      const response = await axios.post('http://localhost:5000/object_detect_search', data);
+      console.log('total', totalValue)
+      console.log('female', femaleValue)
+      console.log('male', maleValue)
 
-      console.log('Response from the backend:', response.data);
+      if (femaleValue + maleValue <= totalValue) {
+        const data = {
+          checkboxes: checkboxValues,
+          textfields: textFieldValues,
+        };
+
+        const response = await axios.post('http://localhost:5000/object_detect_search', data);
+
+        console.log('Response from the backend:', response.data);
+      } else {
+        alert('The sum of "Female" and "Male" values exceeds "Total".');
+      }
     } catch (error) {
-      console.error('Error sending data to the backend:', error);
+      alert('Error sending data to the backend:', error);
     }
   };
 
