@@ -12,7 +12,7 @@ function SubmitResultPopup({ submitResponseMessage }) {
         if (message.status === 412) {
           enqueueSnackbar(message.description, { variant: message.variant });
         } else if (message.status === 200){
-          if(message.submission === "WRONG"){
+        if(message.submission === "WRONG"){
             enqueueSnackbar(message.description, { variant: message.variant });
           } else{
             enqueueSnackbar(message.description, { variant: message.variant });

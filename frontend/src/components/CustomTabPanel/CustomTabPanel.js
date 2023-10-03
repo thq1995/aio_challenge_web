@@ -4,6 +4,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React from "react";
 import MainSearchContainer from '../MainSearchContainer/MainSearchContainer';
+import SketchCanvas from '../SketchCanvas/SketchCanvas';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -74,7 +75,7 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
               This is ASR Search
             </CustomTabPanel>
             <CustomTabPanel value={value} index={3}>
-              This is Sketch
+              <SketchCanvas/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={4}>
               This is Object detection
