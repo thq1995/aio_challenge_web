@@ -149,7 +149,7 @@ def process_sketch():
 
     sketch_data = Image.open('temp.jpg')
 
-    idx_image_list = sketch_model.sketch_search(sketch_data, query , k=500)
+    idx_image_list = sketch_model.sketch_search(sketch_data, query , k=400)
     print(idx_image_list)
     idx_image_list = filter.detection(idx_image_list, query_filter, type)
     
