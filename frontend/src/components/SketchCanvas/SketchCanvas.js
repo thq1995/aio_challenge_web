@@ -6,7 +6,8 @@ import { ReactSketchCanvas } from 'react-sketch-canvas';
 const styles = {
   border: "3px solid black",
   borderRadius: "0.25rem",
-  height: "600px"
+  height: "1080px",
+  width: "1920px"
 };
 
 function SketchCanvas({inputSketchQuery, imagesList, setImagesList, checkboxValues, textFieldValues, setIsSubmitted}) {
