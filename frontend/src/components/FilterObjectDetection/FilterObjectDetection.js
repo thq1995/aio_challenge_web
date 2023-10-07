@@ -17,7 +17,7 @@ function FilterObjectDetection({checkboxValues, textFieldValues, handleCheckboxC
       <FormGroup>
         <Grid container spacing={2}>
           {['Female', 'Male', 'Both'].map((checkboxName) => (
-            <Grid item xs={12} sm={6} key={checkboxName}>
+            <Grid item xs={12} sm={3} key={checkboxName}>
               <FormControlLabel
                 control={
                   <Checkbox
