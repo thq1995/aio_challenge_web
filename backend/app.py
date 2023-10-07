@@ -55,7 +55,7 @@ def image_search():
     print("image search")
     request_data = request.json  
     id_query = int(request.args.get('imgid'))
-    idx_image_list = clip_model.image_search(id_query, k=600)
+    idx_image_list = clip_model.image_search(id_query, k=500)
 
     # filter 
     print(request_data)
@@ -136,47 +136,25 @@ def get_images_by_ids(index_list):
 
 @app.route('/process_sketch', methods=['POST'])
 def process_sketch():
-    data = request.get_json()
-    sketch_data = data.get('sketchData')
-    query = data.get('query')
+    request_data = request.get_json()
+    sketch_data = request_data.get('sketchData')
+    query = request_data.get('query')
     sketch_data = sketch_data.replace("data:image/png;base64,", "")
+    type = list(request_data.get('checkboxes', {}).values())
+    query_filter = list(request_data.get('textfields', {}).values())
+
+
     with open("temp.jpg", "wb") as imgFile:
         imgFile.write(base64.b64decode(sketch_data))
 
     sketch_data = Image.open('temp.jpg')
 
-    idx_image_list = sketch_model.sketch_search(sketch_data, query , k=200)
+    idx_image_list = sketch_model.sketch_search(sketch_data, query , k=500)
+    print(idx_image_list)
+    idx_image_list = filter.detection(idx_image_list, query_filter, type)
+    
     data = get_images_by_ids(idx_image_list)
     return data
-
-
-def create_image_from_sketch(sketch_data):
-    image = Image.new('RGB', (800, 600), color='white')
-    draw = ImageDraw.Draw(image)
-
-    # Process and draw the sketch data on the image (modify as per your data format)
-    for stroke in sketch_data:
-        for i in range(len(stroke) - 1):
-            x1, y1 = stroke[i]
-            x2, y2 = stroke[i + 1]
-            draw.line([(x1, y1), (x2, y2)], fill='black', width=3)
-
-    return image
-
-
-@app.route('/object_detect_search', methods=['POST'])
-def receive_data():
-    try:
-        data = request.json  # Get JSON data from the request
-        checkboxes = data.get('checkboxes', {})
-        textfields = data.get('textfields', {})
-        
-        print("Received Checkbox Data:", checkboxes)
-        print("Received Text Field Data:", textfields)
-        
-        return jsonify({'message': 'Data received successfully'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

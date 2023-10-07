@@ -6,6 +6,7 @@ import SketchQueryField from "../SketchTextField/SketchTextField";
 import ".//SketchContainer.css"
 import axios from "axios";
 import { createSearchParams, useNavigate } from "react-router-dom";
+import FilterObjectDetection from "../FilterObjectDetection/FilterObjectDetection";
 
 
 
@@ -16,14 +17,50 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState({});
   const [open, setOpen] = React.useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(true);
+
+
+  const [checkboxValues, setCheckboxValues] = useState({
+    bothCheckbox: false,
+    femaleCheckbox: false,
+    maleCheckbox: false,
+  });
+
+  const [textFieldValues, setTextFieldValues] = useState({
+    bothTextfield: 0,
+    femaleTextfield: 0,
+    maleTextfield: 0,
+  });
+
+  const handleCheckboxChange = (event) => {
+    setCheckboxValues({
+      ...checkboxValues,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  const handleTextFieldChange = (event) => {
+    if (!event.target.value) {
+      setTextFieldValues({
+        ...textFieldValues,
+        [event.target.name]: 0,
+      });
+    } else {
+      setTextFieldValues({
+        ...textFieldValues,
+        [event.target.name]: parseInt(event.target.value),
+      });
+    }
+  };
+
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  
+
   const navigate = useNavigate();
-  
+
   const styledModel = {
     position: 'absolute',
     top: '50%',
@@ -80,7 +117,7 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
     return selectedImages.some((image) => image._id === imageId);
   };
 
-  const fetchImageSearch = async (imageId, filename) => {
+  const fetchImageSearch = async (imageId) => {
     console.log(imageId);
     const params = { imgid: imageId }
     navigate({
@@ -88,66 +125,108 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
       search: `?${createSearchParams(params)}`
     })
 
-
     try {
-      const image_response = await axios.get(
-        `http://localhost:5000/home/main/imgsearch?imgid=${imageId}`
-      );
-      const sub_image_response = await axios.get(
-        `http://localhost:5000/subimgsearch?imageId=${imageId}`
-      )
-      setImagesList(image_response.data['result']);
-      setSubImages(sub_image_response.data['result']);
+      const totalValue = parseInt(textFieldValues.bothTextfield) || 0;
+      const femaleValue = parseInt(textFieldValues.femaleTextfield) || 0;
+      const maleValue = parseInt(textFieldValues.maleTextfield) || 0;
 
-      console.log('checkdata', subImages)
-      setPage(1);
+      if(checkboxValues.bothCheckbox){
+        if (femaleValue + maleValue <= totalValue) {
+          const data = {
+            checkboxes: checkboxValues,
+            textfields: textFieldValues,
+          };
+  
+          const image_response = await axios.post(
+            `http://localhost:5000/home/main/imgsearch?imgid=${imageId}`, data
+          );
+  
+  
+          const sub_image_response = await axios.get(
+            `http://localhost:5000/subimgsearch?imageId=${imageId}`
+          )
+          setImagesList(image_response.data['result']);
+          setSubImages(sub_image_response.data['result']);
+    
+          console.log('checkdata', subImages)
+          setPage(1);
+        } else {
+          alert('The sum of "Female" and "Male" values exceeds "Total".');
+        }
+      }
+      else{
+        const data = {
+          checkboxes: checkboxValues,
+          textfields: textFieldValues,
+        };
+
+        const image_response = await axios.post(
+          `http://localhost:5000/home/main/imgsearch?imgid=${imageId}`, data
+        );
+
+
+        const sub_image_response = await axios.get(
+          `http://localhost:5000/subimgsearch?imageId=${imageId}`
+        )
+        setImagesList(image_response.data['result']);
+        setSubImages(sub_image_response.data['result']);
+  
+        console.log('checkdata', subImages)
+        setPage(1);
+      }
     } catch (error) {
       console.error('Error fetching image data:', error);
     }
   }
 
-
   return (
     <div>
-      <SketchQueryField inputSketchQuery={inputSketchQuery} setInputSketchQuery={setInputSketchQuery} />
-      <SketchCanvas inputSketchQuery={inputSketchQuery} imagesList={imagesList} setImagesList={setImagesList} />
-
-      <Grid container sx={{ pt: 3, overflow: 'auto' }}>
-        {imagesList && imagesList.length > 0 ? (
-          <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
-            {imagesList.map((image) => (
-              <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`} >
-                <ImageListItemBar
-                  title={image.filename.replace("images/keyframes/", "")}
-                  position="top"
-                  actionIcon={
-                    <IconButton
-                      aria-label={`Delete ${image.filename}`}
-                      onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
-                    >
-                      <AspectRatioIcon sx={{ color: 'white' }} />
-                    </IconButton>
-                  }
-                />
-                <Grid item>
-                  <Checkbox
-                    checked={isImageSelected(image._id)}
-                    onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
-                  />
-                </Grid>
-                <img
-                  onClick={() => fetchImageSearch(image['_id'], image['filename'])}
-                  style={{ cursor: 'pointer' }}
-                  src={`data:image/jpeg;base64,${image['image_data']}`}
-                  alt={`not found -${image['filename']}`}
-                />
-              </ImageListItemWithStyle>
-            ))}
-          </ImageList>
-        ) : (
-          null
-        )}
-      </Grid>
+      <SketchQueryField inputSketchQuery={inputSketchQuery} setInputSketchQuery={setInputSketchQuery} setIsSubmitted={setIsSubmitted} />
+      <FilterObjectDetection checkboxValues={checkboxValues} textFieldValues={textFieldValues} handleCheckboxChange={handleCheckboxChange} handleTextFieldChange={handleTextFieldChange} />
+      <SketchCanvas inputSketchQuery={inputSketchQuery} imagesList={imagesList} setImagesList={setImagesList} checkboxValues={checkboxValues} textFieldValues={textFieldValues} setIsSubmitted={setIsSubmitted}/>
+      {
+        isSubmitted? (
+          <Grid container sx={{ pt: 3, overflow: 'auto' }}>
+          <div style={{ maxHeight: '500px', overflow: 'auto' }}>
+            {imagesList && imagesList.length > 0 ? (
+              <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
+                {imagesList.map((image) => (
+                  <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`} >
+                    <ImageListItemBar
+                      title={image.filename.replace("images/keyframes/", "")}
+                      position="top"
+                      actionIcon={
+                        <IconButton
+                          aria-label={`Delete ${image.filename}`}
+                          onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
+                        >
+                          <AspectRatioIcon sx={{ color: 'white' }} />
+                        </IconButton>
+                      }
+                    />
+                    <Grid item>
+                      <Checkbox
+                        checked={isImageSelected(image._id)}
+                        onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
+                      />
+                    </Grid>
+                    <img
+                      onClick={() => fetchImageSearch(image['_id'], image['filename'])}
+                      style={{ cursor: 'pointer' }}
+                      src={`data:image/jpeg;base64,${image['image_data']}`}
+                      alt={`not found -${image['filename']}`}
+                    />
+                  </ImageListItemWithStyle>
+                ))}
+              </ImageList>
+            ) : (
+              null
+            )}
+          </div>
+        </Grid>
+        ) : null
+      }
+    
 
       {Object.keys(expandedImage).length > 0 && <Modal
         keepMounted
@@ -177,15 +256,6 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
         </Box>
       </Modal>
       }
-      <Grid container justifyContent="center" alignItems="center">
-        <Pagination
-          count={Math.ceil(imageLength / imagePerPage)}
-          color="primary"
-          showFirstButton showLastButton
-          page={page}
-        />
-      </Grid>
-
     </div>
   )
 }

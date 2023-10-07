@@ -18,8 +18,10 @@ const StyledTextarea = styled(TextareaAutosize)({
 });
 
 
-const SketchQueryField = ({ inputSketchQuery, setInputSketchQuery }) => {
+const SketchQueryField = ({ inputSketchQuery, setInputSketchQuery, setIsSubmitted}) => {
   const handleInputSketchQueryChange = (e) => {
+    setIsSubmitted(false);
+
     setInputSketchQuery(e.target.value);
   }
 

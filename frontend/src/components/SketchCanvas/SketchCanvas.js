@@ -9,12 +9,13 @@ const styles = {
   height: "600px"
 };
 
-function SketchCanvas({inputSketchQuery, imagesList, setImagesList}) {
+function SketchCanvas({inputSketchQuery, imagesList, setImagesList, checkboxValues, textFieldValues, setIsSubmitted}) {
   const canvasRef = React.useRef(null);
 
   const searchSketch = async () => {
     canvasRef.current.exportImage("jpg").then(data => {
-      const sketchData = { 'sketchData': data, 'query': inputSketchQuery }
+      const sketchData = { 'sketchData': data, 'query': inputSketchQuery, 'checkboxes': checkboxValues,
+      'textfields': textFieldValues}
       axios.post(
         `http://localhost:5000/process_sketch`
         , sketchData, {
@@ -23,6 +24,7 @@ function SketchCanvas({inputSketchQuery, imagesList, setImagesList}) {
         }
       }).then(response => {
         setImagesList(response.data['result']);
+        setIsSubmitted(true);
       }).catch(error => {
         console.log('error', error)
       })

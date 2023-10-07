@@ -204,7 +204,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     }
   };
 
-  const fetchImageSearch = async (imageId, filename) => {
+  const fetchImageSearch = async (imageId) => {
     console.log(imageId);
     const params = { imgid: imageId }
     navigate({
