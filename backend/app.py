@@ -7,13 +7,13 @@ import json
 import io
 from utils.query_processing import Translation
 from utils.faiss import Myfaiss
+from utils.re_ranking import Filter
 import gridfs
 import base64
 import pymongo
 from bson.json_util import dumps
 from bson import decode_all, json_util
 from PIL import Image, ImageDraw
-
 
 app = Flask(__name__)
 client = MongoClient('mongodb://localhost:27017/')
@@ -24,40 +24,54 @@ images_collection = db['images']
 CORS(app)
 bin_file='index.bin'
 sketch_bin='sketch_index.bin'
+filter_npy_path = 'person_detection.npy'
 
 clip_model = Myfaiss(bin_file,'cpu', Translation(), "ViT-L/14@336px")
 sketch_model = Myfaiss(sketch_bin, 'cpu',Translation(), "ViT-B-16", isSketch=True)
+filter = Filter(detect_path=filter_npy_path)
 
-
-with open('kf_path.json') as json_file:
-    json_dict = json.load(json_file)
-
-
-@app.route('/home/main/textsearch')
+@app.route('/home/main/textsearch', methods=['POST'])
 def getTextSearch():
     print('text_search')
-    pagefile = []
+    request_data = request.json  
     text_query = request.args.get('textquery')
-   
+    idx_image_list = clip_model.text_search(text_query, k=400)
 
-    idx_image_list = clip_model.text_search(text_query, k=200)
+    print(request_data)
+    type = list(request_data.get('checkboxes', {}).values())
+    query = list(request_data.get('textfields', {}).values())
+    print('type', type)
+    print('query', query)
 
-    data = get_images_by_ids(idx_image_list.tolist())
+    idx_image_list = filter.detection(idx_image_list.tolist(), query, type)
+
+    data = get_images_by_ids(idx_image_list)
     print('testing_data')
    
     return data
 
-@app.route('/home/main/imgsearch')
+@app.route('/home/main/imgsearch',  methods=['POST'])
 def image_search():
     print("image search")
+    request_data = request.json  
     id_query = int(request.args.get('imgid'))
-    idx_image_list = clip_model.image_search(id_query, k=200)
-    data = get_images_by_ids(idx_image_list.tolist())
+    idx_image_list = clip_model.image_search(id_query, k=600)
+
+    # filter 
+    print(request_data)
+    type = list(request_data.get('checkboxes', {}).values())
+    query = list(request_data.get('textfields', {}).values())
+    print('type', type)
+    print('query', query)
+
+    idx_image_list = filter.detection(idx_image_list.tolist(), query, type)
+    print(idx_image_list)
+    data = get_images_by_ids(idx_image_list)
 
     return data
     
 
-@app.route('/get_all_images/pages')
+@app.route('/get_all_images/pages', methods=['GET'])
 def get_all_images():
     page = int(request.args.get("page", 1))
     page_size = int(request.args.get("page_size", 20))
@@ -94,7 +108,7 @@ def get_subsequent_images():
     print('sub_img_id', image_id)
     index_list = []
     if (image_id >= 10):
-        index_list = [image_id  for image_id in range(image_id-20, image_id + 20)]
+        index_list = [image_id  for image_id in range(image_id-30, image_id + 30)]
     else: 
         index_list = [image_id  for image_id in range(image_id, image_id + 20)]
 

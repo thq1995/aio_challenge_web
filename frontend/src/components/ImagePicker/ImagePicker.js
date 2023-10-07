@@ -170,7 +170,6 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
     return (
       <React.Fragment>
         <IntegrationNotistack submitResponseMessage={submitResponseMessage} setSubmitResponseMessage={setSubmitResponseMessage} />
-
         <h3>Image Submission Sites</h3>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={3}>
@@ -219,7 +218,7 @@ function ImagePicker({ selectedImages, setSelectedImages }) {
             {(provided) => (
               <ImageList
                 sx={{ width: 'auto', height: 'auto' }}
-                cols={6}
+                cols={9}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >

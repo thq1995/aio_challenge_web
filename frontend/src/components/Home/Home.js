@@ -33,7 +33,7 @@ function Home() {
               display: "flex",
               flexDirection: "column",
               borderRadius: "8px",
-              height: '500px',
+              height: '450px',
               backgroundColor: '#'
             }}
             style={{ padding: '20px' }}

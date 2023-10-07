@@ -1,5 +1,4 @@
 from pyvi import ViUtils, ViTokenizer
-import googletrans
 import translate
 from difflib import SequenceMatcher
 from langdetect import detect
@@ -7,16 +6,14 @@ import underthesea
 
 
 class Translation():
-    def __init__(self, from_lang='vi', to_lang='en', mode='google'):
+    def __init__(self, from_lang='vi', to_lang='en', mode='translate'):
         # The class Translation is a wrapper for the two translation libraries, googletrans and translate. 
         self.__mode = mode
         self.__from_lang = from_lang
         self.__to_lang = to_lang
 
-        if mode in 'googletrans':
-            self.translator = googletrans.Translator()
-        elif mode in 'translate':
-            self.translator = translate.Translator(from_lang=from_lang,to_lang=to_lang)
+       
+        self.translator = translate.Translator(from_lang=from_lang,to_lang=to_lang)
 
     def preprocessing(self, text):
 

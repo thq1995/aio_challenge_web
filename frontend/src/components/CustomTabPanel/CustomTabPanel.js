@@ -4,10 +4,8 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React from "react";
 import MainSearchContainer from '../MainSearchContainer/MainSearchContainer';
-import SketchCanvas from '../SketchCanvas/SketchCanvas';
-import SketchContainer from '../SketchContainer/SketchContainer';
-import ObjectDetectionContainer from '../ObjectDetectionContainer/ObjectDetectionContainer';
 import OCRContainer from '../OCRContainer/OCRContainer';
+import SketchContainer from '../SketchContainer/SketchContainer';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -64,7 +62,6 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
                 <Tab label="CLIP" {...a11yProps(0)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="OCR" {...a11yProps(1)} sx={{ color: 'black', fontWeight: 'bold' }} />
                 <Tab label="Sketch" {...a11yProps(3)} sx={{ color: 'black', fontWeight: 'bold' }} />
-                <Tab label="Object Detection" {...a11yProps(4)} sx={{ color: 'black', fontWeight: 'bold' }} />
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -75,9 +72,6 @@ export default function BasicTabs({ selectedImages, setSelectedImages, subImages
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
               <SketchContainer subImages={subImages} setSubImages={setSubImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages}/>
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={3}>
-              <ObjectDetectionContainer/>
             </CustomTabPanel>
           </Box>
         </Paper>

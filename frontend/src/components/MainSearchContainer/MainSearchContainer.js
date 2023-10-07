@@ -11,6 +11,7 @@ import ImageSearchTwoToneIcon from '@mui/icons-material/ImageSearchTwoTone';
 import {
   Drawer
 } from "@mui/material";
+import FilterObjectDetection from "../FilterObjectDetection/FilterObjectDetection";
 import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
 
 const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
@@ -31,6 +32,40 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const [page, setPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(true);
+
+  const [checkboxValues, setCheckboxValues] = useState({
+    bothCheckbox: false,
+    femaleCheckbox: false,
+    maleCheckbox: false,
+  });
+
+  const [textFieldValues, setTextFieldValues] = useState({
+    bothTextfield: 0,
+    femaleTextfield: 0,
+    maleTextfield: 0,
+  });
+
+  const handleCheckboxChange = (event) => {
+    setCheckboxValues({
+      ...checkboxValues,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  const handleTextFieldChange = (event) => {
+    if (!event.target.value){
+      setTextFieldValues({
+        ...textFieldValues,
+        [event.target.name]: 0,
+      });
+    }else{
+      setTextFieldValues({
+        ...textFieldValues,
+        [event.target.name]: parseInt(event.target.value),
+      });
+    }
+  };
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -58,6 +93,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
 
 
   const handleInputQueryChange = (value) => {
+    setIsSubmitted(false);
     setInputQuery(value);
   }
 
@@ -72,7 +108,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   const fetchImages = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/get_all_images/pages?page=1&page_size=28`
+        `http://localhost:5000/get_all_images/pages?page=1&page_size=20`
       );
       setImagesList(response.data['result']);
       setImageLength(response.data['images_length'])
@@ -103,7 +139,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     }
     try {
       const response = await axios.get(
-        `http://localhost:5000/get_all_images/pages?page=${page}&page_size=28`
+        `http://localhost:5000/get_all_images/pages?page=${page}&page_size=20`
       );
       console.log('image_response', response)
       setImagesList(response.data['result']);
@@ -114,7 +150,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     }
   }
 
-  const fetchImagesQueryData = async (inputValue) => {
+  const fetchTextSearch = async (inputValue) => {
     const params = { textquery: inputQuery }
     navigate({
       pathname: '/home/main',
@@ -122,13 +158,47 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     })
 
     try {
-      const response = await axios.get(
-        `http://localhost:5000/home/main/textsearch?textquery=${inputQuery}`
-      );
-      setImagesList(response.data['result']);
-      setImageLength(response.data['images_length'])
-      setTextSearch(true);
-      setClearPage(true);
+
+      const totalValue = parseInt(textFieldValues.bothTextfield) || 0;
+      const femaleValue = parseInt(textFieldValues.femaleTextfield) || 0;
+      const maleValue = parseInt(textFieldValues.maleTextfield) || 0;
+
+      if(checkboxValues.bothCheckbox){
+        if (femaleValue + maleValue <= totalValue) {
+          const data = {
+            checkboxes: checkboxValues,
+            textfields: textFieldValues,
+          };
+  
+          const response = await axios.post(
+            `http://localhost:5000/home/main/textsearch?textquery=${inputQuery}`, data
+          );
+          setImagesList(response.data['result']);
+          setImageLength(response.data['images_length'])
+          setTextSearch(true);
+          setClearPage(true);
+          setIsSubmitted(true);
+        } else {
+          alert('The sum of "Female" and "Male" values exceeds "Total".');
+        }
+      }
+      else{
+        const data = {
+          checkboxes: checkboxValues,
+          textfields: textFieldValues,
+        };
+
+        const response = await axios.post(
+          `http://localhost:5000/home/main/textsearch?textquery=${inputQuery}`, data
+        );
+        setImagesList(response.data['result']);
+        setImageLength(response.data['images_length'])
+        setTextSearch(true);
+        setClearPage(true);
+        setIsSubmitted(true);
+      }
+
+      
     } catch (error) {
       console.error('Error fetching image data:', error);
     }
@@ -144,17 +214,54 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
 
 
     try {
-      const image_response = await axios.get(
-        `http://localhost:5000/home/main/imgsearch?imgid=${imageId}`
-      );
-      const sub_image_response = await axios.get(
-        `http://localhost:5000/subimgsearch?imageId=${imageId}`
-      )
-      setImagesList(image_response.data['result']);
-      setSubImages(sub_image_response.data['result']);
+      const totalValue = parseInt(textFieldValues.bothTextfield) || 0;
+      const femaleValue = parseInt(textFieldValues.femaleTextfield) || 0;
+      const maleValue = parseInt(textFieldValues.maleTextfield) || 0;
 
-      console.log('checkdata', subImages)
-      setPage(1);
+      if(checkboxValues.bothCheckbox){
+        if (femaleValue + maleValue <= totalValue) {
+          const data = {
+            checkboxes: checkboxValues,
+            textfields: textFieldValues,
+          };
+  
+          const image_response = await axios.post(
+            `http://localhost:5000/home/main/imgsearch?imgid=${imageId}`, data
+          );
+  
+  
+          const sub_image_response = await axios.get(
+            `http://localhost:5000/subimgsearch?imageId=${imageId}`
+          )
+          setImagesList(image_response.data['result']);
+          setSubImages(sub_image_response.data['result']);
+    
+          console.log('checkdata', subImages)
+          setPage(1);
+        } else {
+          alert('The sum of "Female" and "Male" values exceeds "Total".');
+        }
+      }
+      else{
+        const data = {
+          checkboxes: checkboxValues,
+          textfields: textFieldValues,
+        };
+
+        const image_response = await axios.post(
+          `http://localhost:5000/home/main/imgsearch?imgid=${imageId}`, data
+        );
+
+
+        const sub_image_response = await axios.get(
+          `http://localhost:5000/subimgsearch?imageId=${imageId}`
+        )
+        setImagesList(image_response.data['result']);
+        setSubImages(sub_image_response.data['result']);
+  
+        console.log('checkdata', subImages)
+        setPage(1);
+      }
     } catch (error) {
       console.error('Error fetching image data:', error);
     }
@@ -187,7 +294,8 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
 
   return (
     <div>
-      <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchImagesQueryData} />
+      <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchTextSearch} />
+      <FilterObjectDetection checkboxValues={checkboxValues} textFieldValues={textFieldValues} handleCheckboxChange={handleCheckboxChange} handleTextFieldChange={handleTextFieldChange} />
       <IconButton
         aria-label="Subsequent Frames"
         onClick={toggleDrawer}
@@ -196,42 +304,48 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
         <ImageSearchTwoToneIcon />
       </IconButton>
       <Typography variant="caption">Subsequent Frames</Typography>
-      <Grid container sx={{ pt: 3, overflow: 'auto' }}>
-        {imagesList && imagesList.length > 0 ? (
-          <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
-            {imagesList.map((image) => (
-              <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
-                <ImageListItemBar
-                  title={image.filename.replace("images/keyframes/", "")}
-                  position="top"
-                  actionIcon={
-                    <IconButton
-                      aria-label={`Delete ${image.filename}`}
-                      onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
-                    >
-                      <AspectRatioIcon sx={{ color: 'white' }} />
-                    </IconButton>
-                  }
-                />
-                <Grid item>
-                  <Checkbox
-                    checked={isImageSelected(image._id)}
-                    onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
-                  />
-                </Grid>
-                <img
-                  onClick={() => fetchImageSearch(image['_id'], image['filename'])}
-                  style={{ cursor: 'pointer' }}
-                  src={`data:image/jpeg;base64,${image['image_data']}`}
-                  alt={`not found -${image['filename']}`}
-                />
-              </ImageListItemWithStyle>
-            ))}
-          </ImageList>
-        ) : (
-          null
-        )}
-      </Grid>
+
+      {isSubmitted ? (
+        <Grid container sx={{ pt: 3, overflow: 'auto' }}>
+          {console.log(imagesList)}
+          {imagesList && imagesList.length > 0 ? (
+            <div style={{ maxHeight: '600px', overflow: 'auto' }}>
+              <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
+                {imagesList.map((image) => (
+                  <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
+                    <ImageListItemBar
+                      title={image.filename.replace("images/keyframes/", "")}
+                      position="top"
+                      actionIcon={
+                        <IconButton
+                          aria-label={`Delete ${image.filename}`}
+                          onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
+                        >
+                          <AspectRatioIcon sx={{ color: 'white' }} />
+                        </IconButton>
+                      }
+                    />
+                    <Grid item>
+                      <Checkbox
+                        checked={isImageSelected(image._id)}
+                        onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
+                      />
+                    </Grid>
+                    <img
+                      onClick={() => fetchImageSearch(image['_id'], image['filename'])}
+                      style={{ cursor: 'pointer' }}
+                      src={`data:image/jpeg;base64,${image['image_data']}`}
+                      alt={`not found -${image['filename']}`}
+                    />
+                  </ImageListItemWithStyle>
+                ))}
+              </ImageList>
+            </div>
+          ) : (
+            null
+          )}
+        </Grid>
+      ) : null}
 
       {Object.keys(expandedImage).length > 0 && <Modal
         keepMounted
@@ -261,16 +375,19 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
         </Box>
       </Modal>
       }
-      <Grid container justifyContent="center" alignItems="center">
-        <Pagination
-          count={Math.ceil(imageLength / imagePerPage)}
-          color="primary"
-          showFirstButton showLastButton
-          page={page}
-          onChange={handleChangePage}
-        />
-      </Grid>
-
+      {
+        !textSearch ? (
+          <Grid container justifyContent="center" alignItems="center">
+            <Pagination
+              count={Math.ceil(imageLength / imagePerPage)}
+              color="primary"
+              showFirstButton showLastButton
+              page={page}
+              onChange={handleChangePage}
+            />
+          </Grid>
+        ) : null
+      }
 
       <Drawer
         anchor="right"
