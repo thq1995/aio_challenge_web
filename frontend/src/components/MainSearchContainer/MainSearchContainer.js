@@ -1,30 +1,13 @@
-import { Box, Checkbox, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, Typography, styled } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import CustomTextarea from "../CustomTextArea/CustomTextArea";
 import "./MainSearchContainer.css";
 
-import AspectRatioIcon from "@mui/icons-material/AspectRatio";
-import ImageSearchTwoToneIcon from '@mui/icons-material/ImageSearchTwoTone';
-
-import {
-  Drawer
-} from "@mui/material";
 import FilterObjectDetection from "../FilterObjectDetection/FilterObjectDetection";
-import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
 
-const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
-  "&:hover": {
-    cursor: "pointer",
-    opacity: 0.8,
-    border: `solid 5px red`,
-  },
-}));
-
-function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelectedImages }) {
+function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelectedImages, imagesList, setImagesList}) {
   const [inputQuery, setInputQuery] = useState('');
-  const [imagesList, setImagesList] = useState([]);
   const [imageLength, setImageLength] = useState(0);
   const [textSearch, setTextSearch] = useState(false);
   const [imagePerPage, setImagePerPage] = useState(32);
@@ -78,19 +61,6 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
     setOpen(false);
     setExpandedImage({});
   }
-
-  const styledModel = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 'auto',
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
-
 
   const handleInputQueryChange = (value) => {
     setIsSubmitted(false);
@@ -151,7 +121,7 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
   }
 
   const fetchTextSearch = async (inputValue) => {
-    const params = { textquery: inputQuery }
+  const params = { textquery: inputQuery }
     navigate({
       pathname: '/home/main',
       search: `?${createSearchParams(params)}`
@@ -286,124 +256,11 @@ function MainSearchContainer({ subImages, setSubImages, selectedImages, setSelec
       }
     });
   };
-
-
-  const isImageSelected = (imageId) => {
-    return selectedImages.some((image) => image._id === imageId);
-  };
-
+  
   return (
     <div>
       <CustomTextarea value={inputQuery} onChange={handleInputQueryChange} clearInput={clearInputQuery} onSubmit={fetchTextSearch} />
       <FilterObjectDetection checkboxValues={checkboxValues} textFieldValues={textFieldValues} handleCheckboxChange={handleCheckboxChange} handleTextFieldChange={handleTextFieldChange} />
-      <IconButton
-        aria-label="Subsequent Frames"
-        onClick={toggleDrawer}
-        style={{ color: 'blue' }}
-      >
-        <ImageSearchTwoToneIcon />
-      </IconButton>
-      <Typography variant="caption">Subsequent Frames</Typography>
-
-      {isSubmitted ? (
-        <Grid container sx={{ pt: 3, overflow: 'auto' }}>
-          {console.log(imagesList)}
-          {imagesList && imagesList.length > 0 ? (
-            <div style={{ maxHeight: '600px', overflow: 'auto' }}>
-              <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
-                {imagesList.map((image) => (
-                  <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`}>
-                    <ImageListItemBar
-                      title={image.filename.replace("images/keyframes/", "")}
-                      position="top"
-                      actionIcon={
-                        <IconButton
-                          aria-label={`Delete ${image.filename}`}
-                          onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
-                        >
-                          <AspectRatioIcon sx={{ color: 'white' }} />
-                        </IconButton>
-                      }
-                    />
-                    <Grid item>
-                      <Checkbox
-                        checked={isImageSelected(image._id)}
-                        onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
-                      />
-                    </Grid>
-                    <img
-                      onClick={() => fetchImageSearch(image['_id'], image['filename'])}
-                      style={{ cursor: 'pointer' }}
-                      src={`data:image/jpeg;base64,${image['image_data']}`}
-                      alt={`not found -${image['filename']}`}
-                    />
-                  </ImageListItemWithStyle>
-                ))}
-              </ImageList>
-            </div>
-          ) : (
-            null
-          )}
-        </Grid>
-      ) : null}
-
-      {Object.keys(expandedImage).length > 0 && <Modal
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="keep-mounted-modal-title"
-        aria-describedby="keep-mounted-modal-description"
-      >
-
-        <Box
-          sx={{
-            ...styledModel,
-            width: 'auto',
-            height: 'auto',
-          }}
-        >
-          <ImageListItemBar
-            // title={expandedImage['filename'].replace("images/keyframes/", "")}
-            position="top"
-          />
-          <img
-            style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
-            src={`data:image/jpeg;base64,${expandedImage.image_data}`}
-            loading="lazy"
-            alt={`not found -${expandedImage.filename}`}
-          />
-        </Box>
-      </Modal>
-      }
-      {
-        !textSearch ? (
-          <Grid container justifyContent="center" alignItems="center">
-            <Pagination
-              count={Math.ceil(imageLength / imagePerPage)}
-              color="primary"
-              showFirstButton showLastButton
-              page={page}
-              onChange={handleChangePage}
-            />
-          </Grid>
-        ) : null
-      }
-
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={toggleDrawer}
-      >
-        <Box
-          sx={{
-            width: 900, // Set the width of the drawer as per your design
-            padding: 2,
-          }}
-        >
-          <SubsequentSearch subImages={subImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
-        </Box>
-      </Drawer>
-
     </div>
   );
 }

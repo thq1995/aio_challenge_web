@@ -22,7 +22,7 @@ images_collection = db['images']
 
 
 CORS(app)
-bin_file='index.bin'
+bin_file='index_1_36.bin'
 sketch_bin='sketch_index.bin'
 filter_npy_path = 'person_detection.npy'
 

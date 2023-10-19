@@ -4,8 +4,10 @@ import {
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import React, { useState } from "react";
-import BasicTabs from "../CustomTabPanel/CustomTabPanel";
+import BasicTabs from "../ImageToolContainer/ImageToolContainer";
 import ImagePicker from "../ImagePicker/ImagePicker";
+import ImageDisplay from "../ImageDisplay/ImageDisplay";
+import ImageToolContainer from "../ImageToolContainer/ImageToolContainer";
 
 function Home() {
   const [subImages, setSubImages] = useState([]);
@@ -42,7 +44,7 @@ function Home() {
           </Paper>
         </Grid>
       </Grid>
-      <BasicTabs selectedImages={selectedImages} setSelectedImages={setSelectedImages} subImages={subImages} setSubImages={setSubImages} />
+      <ImageToolContainer selectedImages={selectedImages} setSelectedImages={setSelectedImages} subImages={subImages} setSubImages={setSubImages} />
     </div>
   );
 }

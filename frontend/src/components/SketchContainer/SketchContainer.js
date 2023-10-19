@@ -1,17 +1,14 @@
-import AspectRatioIcon from "@mui/icons-material/AspectRatio";
-import { Box, Checkbox, Drawer, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, Modal, Pagination, Typography, styled } from "@mui/material";
-import React, { useState } from "react";
-import SketchCanvas from "../SketchCanvas/SketchCanvas";
-import SketchQueryField from "../SketchTextField/SketchTextField";
-import ".//SketchContainer.css"
+import { ImageListItem, styled } from "@mui/material";
 import axios from "axios";
+import React, { useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import FilterObjectDetection from "../FilterObjectDetection/FilterObjectDetection";
-import ImageSearchTwoToneIcon from '@mui/icons-material/ImageSearchTwoTone';
-import SubsequentSearch from "../SubsequentSearch/SubsequentSearch";
+import SketchCanvas from "../SketchCanvas/SketchCanvas";
+import SketchQueryField from "../SketchTextField/SketchTextField";
+import ".//SketchContainer.css";
 
 
-function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedImages }) {
+function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedImages, imagesList, setImagesList}) {
   const [imageLength, setImageLength] = useState(0);
   const [imagePerPage, setImagePerPage] = useState(32);
   const [page, setPage] = useState(1);
@@ -19,6 +16,8 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
   const [expandedImage, setExpandedImage] = useState({});
   const [open, setOpen] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = useState(true);
+  const [inputSketchQuery, setInputSketchQuery] = useState('');
+  const navigate = useNavigate();
 
 
 
@@ -60,11 +59,6 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
     }
   };
 
-
-
-
-  const navigate = useNavigate();
-
   const styledModel = {
     position: 'absolute',
     top: '50%',
@@ -82,8 +76,6 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
     setExpandedImage({});
   }
 
-  const [inputSketchQuery, setInputSketchQuery] = useState('');
-  const [imagesList, setImagesList] = useState([]);
   const ImageListItemWithStyle = styled(ImageListItem)(({ theme }) => ({
     "&:hover": {
       cursor: "pointer",
@@ -186,102 +178,6 @@ function SketchContainer({ subImages, setSubImages, selectedImages, setSelectedI
       <SketchQueryField inputSketchQuery={inputSketchQuery} setInputSketchQuery={setInputSketchQuery} setIsSubmitted={setIsSubmitted} />
       <FilterObjectDetection checkboxValues={checkboxValues} textFieldValues={textFieldValues} handleCheckboxChange={handleCheckboxChange} handleTextFieldChange={handleTextFieldChange} />
       <SketchCanvas inputSketchQuery={inputSketchQuery} imagesList={imagesList} setImagesList={setImagesList} checkboxValues={checkboxValues} textFieldValues={textFieldValues} setIsSubmitted={setIsSubmitted} />
-      <IconButton
-        aria-label="Subsequent Frames"
-        onClick={toggleDrawer}
-        style={{ color: 'blue' }}
-      >
-        <ImageSearchTwoToneIcon />
-      </IconButton>
-      <Typography variant="caption">Subsequent Frames</Typography>
-      {
-        isSubmitted ? (
-          <Grid container sx={{ pt: 3, overflow: 'auto' }}>
-            <div style={{ maxHeight: '500px', overflow: 'auto' }}>
-              {console.log('imagelist', imagesList)}
-              {imagesList && imagesList.length > 0 ? (
-                <ImageList sx={{ width: 'auto', height: 'auto' }} cols={8} rowHeight={'auto'} >
-                  {imagesList.map((image) => (
-                    <ImageListItemWithStyle key={image["_id"]} className={`${isImageSelected(image["_id"]) ? 'selectedImage' : ''}`} >
-                      <ImageListItemBar
-                        title={image.filename.replace("images/keyframes/", "")}
-                        position="top"
-                        actionIcon={
-                          <IconButton
-                            aria-label={`Delete ${image.filename}`}
-                            onClick={() => handleExpandImage(image._id, image.filename, image.image_data)}
-                          >
-                            <AspectRatioIcon sx={{ color: 'white' }} />
-                          </IconButton>
-                        }
-                      />
-                      <Grid item>
-                        <Checkbox
-                          checked={isImageSelected(image._id)}
-                          onChange={() => toggleImageSelection(image['_id'], image['image_data'], image['filename'])}
-                        />
-                      </Grid>
-                      <img
-                        onClick={() => fetchImageSearch(image['_id'], image['filename'])}
-                        style={{ cursor: 'pointer' }}
-                        src={`data:image/jpeg;base64,${image['image_data']}`}
-                        alt={`not found -${image['filename']}`}
-                      />
-                    </ImageListItemWithStyle>
-                  ))}
-                </ImageList>
-              ) : (
-                null
-              )}
-            </div>
-          </Grid>
-        ) : null
-      }
-
-
-      {Object.keys(expandedImage).length > 0 && <Modal
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="keep-mounted-modal-title"
-        aria-describedby="keep-mounted-modal-description"
-      >
-
-        <Box
-          sx={{
-            ...styledModel,
-            width: 'auto',
-            height: 'auto',
-          }}
-        >
-          <ImageListItemBar
-            // title={expandedImage['filename'].replace("images/keyframes/", "")}
-            position="top"
-          />
-          <img
-            style={{ cursor: 'pointer', width: 'auto', height: 'auto' }}
-            src={`data:image/jpeg;base64,${expandedImage.image_data}`}
-            loading="lazy"
-            alt={`not found -${expandedImage.filename}`}
-          />
-        </Box>
-      </Modal>
-      }
-
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={toggleDrawer}
-      >
-        <Box
-          sx={{
-            width: 900, 
-            padding: 2,
-          }}
-        >
-          <SubsequentSearch subImages={subImages} selectedImages={selectedImages} setSelectedImages={setSelectedImages} />
-        </Box>
-      </Drawer>
     </div>
   )
 }

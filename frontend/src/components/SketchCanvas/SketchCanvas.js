@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import axios from 'axios';
 import * as React from 'react';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
@@ -6,8 +6,8 @@ import { ReactSketchCanvas } from 'react-sketch-canvas';
 const styles = {
   border: "3px solid black",
   borderRadius: "0.25rem",
-  height: "1080px",
-  width: "1920px"
+  height: "200px",
+  width: "100%"
 };
 
 function SketchCanvas({inputSketchQuery, imagesList, setImagesList, checkboxValues, textFieldValues, setIsSubmitted}) {
@@ -34,7 +34,7 @@ function SketchCanvas({inputSketchQuery, imagesList, setImagesList, checkboxValu
   }
 
   return (
-    <div>
+    <Grid container spacing={2} pt={5}>
       <ReactSketchCanvas
         style={styles}
         ref={canvasRef}
@@ -51,7 +51,7 @@ function SketchCanvas({inputSketchQuery, imagesList, setImagesList, checkboxValu
           Clear
         </Button>
       </div>
-    </div>
+    </Grid>
   );
 };
 
