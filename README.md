@@ -9,6 +9,7 @@
 * [Huy Tien Nguyen](https://github.com/huynt654)
 * [Minh-Hung An](https://github.com/anminhhung)
 
+huy
 ## Sytem pipeline 
 <img src="./figures/AIC_pipeline.png" alt="pipeline image" style="zoom:70%;" />
 
